@@ -61,7 +61,7 @@ const formFields = [
 const formButton = {
   enabled: true,
   text: 'Save'
-}; 
+};
 
 const renderContent = Handlebars.compile(template);
 

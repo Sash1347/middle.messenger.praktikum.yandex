@@ -60,9 +60,9 @@ const formFields = [
 
 ];
 
-const formButton = { 
-    enabled: true, 
-    text: 'Register' 
+const formButton = {
+    enabled: true,
+    text: 'Register'
 };
 
 const RenderRegistrationContent = () => {

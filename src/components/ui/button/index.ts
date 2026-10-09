@@ -18,7 +18,7 @@ const RenderButton = (
         className,
     } : ButtonProps
 ) => {
-    return renderContent({ enabled, text, className }); 
+    return renderContent({ enabled, text, className });
 };
 
 export default RenderButton;
