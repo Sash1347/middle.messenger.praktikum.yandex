@@ -3,6 +3,9 @@ import RenderRegistrationContent from '../pages/registration';
 import RenderMainContent from '../pages/main';
 import RenderErrorContent from '../pages/error';
 import RenderHomePageContent from '../pages/home';
+import RenderProfileContent from '../pages/profile';
+import RenderEditProfileContent from '../pages/editProfile';
+import RenderChangePasswordContent from '../pages/changePassword';
 
 const routes: Record<string, () => string> = {
   '/login': RenderLoginContent,
@@ -10,6 +13,9 @@ const routes: Record<string, () => string> = {
   '/main': RenderMainContent,
   '/error': RenderErrorContent,
   '/': RenderHomePageContent,
+  '/profile': RenderProfileContent,
+  '/edit-profile': RenderEditProfileContent,
+  '/change-password': RenderChangePasswordContent,
 };
 
 export function navigate(path: string, queryParams?: Record<string, string>): void {

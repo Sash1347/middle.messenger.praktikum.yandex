@@ -6,17 +6,19 @@ import './index.scss';
 const renderContent = Handlebars.compile(template);
 
 interface ButtonProps {
+  enabled: boolean;
   text: string;
   className?: string;
 }
 
 const RenderButton = (
     {
+        enabled,
         text,
         className,
     } : ButtonProps
 ) => {
-    return renderContent({ text, className }); 
+    return renderContent({ enabled, text, className }); 
 };
 
 export default RenderButton;

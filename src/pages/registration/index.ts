@@ -1,60 +1,73 @@
 import Handlebars from 'handlebars';
 import template from './index.hbs?raw';
 
-import RenderButton from '../../components/ui/button';
-import RenderInput from '../../components/ui/input';
+import FormLayout from '../../components/form';
 
 import './index.scss';
 
 const renderContent = Handlebars.compile(template);
 
+const formFields = [
+    {
+        type: 'text',
+        id: 'first_name',
+        name: 'first_name',
+        label: 'First name',
+        placeholder: 'Enter your first name',
+        value: ''
+    },
+    {
+        type: 'text',
+        id: 'second_name',
+        name: 'second_name',
+        label: 'Second name',
+        placeholder: 'Enter your second name',
+        value: ''
+    },
+    {
+        type: 'text',
+        id: 'login',
+        name: 'login',
+        label: 'Login',
+        placeholder: 'Enter your login',
+        value: ''
+    },
+    {
+        type: 'email',
+        id: 'email',
+        name: 'email',
+        label: 'Email',
+        placeholder: 'Enter your email',
+        value: ''
+    },
+    {
+        type: 'password',
+        id: 'password',
+        name: 'password',
+        label: 'Password',
+        placeholder: 'Enter your password',
+        value: ''
+    },
+
+    {
+        type: 'tel',
+        id: 'phone',
+        name: 'phone',
+        label: 'Phone',
+        placeholder: 'Enter your phone number',
+        value: ''
+    }
+
+];
+
+const formButton = { 
+    enabled: true, 
+    text: 'Register' 
+};
+
 const RenderRegistrationContent = () => {
     return renderContent({
-        inputFirstName: RenderInput({
-            type: 'text',
-            id: 'first_name',
-            name: 'first_name',
-            label: 'First name',
-            placeholder: 'Enter your first name'
-        }),
-        inputSecondName: RenderInput({
-            type: 'text',
-            id: 'second_name',
-            name: 'second_name',
-            label: 'Second name',
-            placeholder: 'Enter your second name'
-        }),
-        inputLogin: RenderInput({
-            type: 'text',
-            id: 'login',
-            name: 'login',
-            label: 'Login',
-            placeholder: 'Enter your login'
-        }),
-        inputEmail: RenderInput({
-            type: 'email',
-            id: 'email',
-            name: 'email',
-            label: 'Email',
-            placeholder: 'Enter your email'
-        }),
-        inputPassword: RenderInput({
-            type: 'password',
-            id: 'password',
-            name: 'password',
-            label: 'Password',
-            placeholder: 'Enter your password'
-        }),
-        inputPhone: RenderInput({
-            type: 'tel',
-            id: 'phone',
-            name: 'phone',
-            label: 'Phone',
-            placeholder: 'Enter your phone number'
-        }),
-        submitButton: RenderButton({
-            text: 'Register',
-        })
+        form: FormLayout(formFields, formButton)
     });
 };
 

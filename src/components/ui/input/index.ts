@@ -11,6 +11,7 @@ interface InputProps {
   name?: string;
   label?: string;
   placeholder?: string;
+  value?: string;
 }
 
 const RenderInput = (
@@ -20,9 +21,10 @@ const RenderInput = (
         name,
         label,
         placeholder,
+        value,
     } : InputProps
 ) => {
-    return renderContent({ type, id, name, label, placeholder });
+    return renderContent({ type, id, name, label, placeholder, value });
 };
 
 export default RenderInput;
