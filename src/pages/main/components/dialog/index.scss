@@ -1,0 +1,21 @@
+@use '../../../../assets/styles/variables' as *;
+
+.dialog {
+    &__messages {
+        display: flex;
+        flex-direction: column;
+        padding: 12px;
+        padding-top: 80px;
+        border-radius: 8px;
+        gap: 26px;
+        overflow: auto;
+        margin-top: auto;
+    }
+
+    &__input {
+        background-color: $chat-background-color;
+        padding: 12px;
+        margin: 0 12px 12px 12px;
+        border-radius: 8px;
+    }
+}

@@ -1,0 +1,21 @@
+@use '../../../../assets/styles/variables' as *;
+
+.chat-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background-color: $chat-item-background-color;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+
+    &:hover {
+        background-color: $chat-item-hover-color;
+    }
+
+    &__avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+    }
+}
