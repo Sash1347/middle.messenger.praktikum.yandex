@@ -28,7 +28,7 @@ const formFields = [
 
 const formButton = {
   enabled: true,
-  text: "Submit",
+  text: "Sign in",
 };
 
 const RenderLoginContent = () => {

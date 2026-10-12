@@ -12,9 +12,9 @@ interface FormItem {
     id: string,
     name: string,
     label: string,
-    placeholder: string,
-    value: string,
-    type: string
+    type: string,
+    placeholder?: string,
+    value?: string
 }
 
 const FormLayout = (form: Array<FormItem>, ButtonInfo?: any) => {

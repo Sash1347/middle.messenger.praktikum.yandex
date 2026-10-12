@@ -62,7 +62,7 @@ const formFields = [
 
 const formButton = {
     enabled: true,
-    text: 'Register'
+    text: 'Sign up'
 };
 
 const RenderRegistrationContent = () => {

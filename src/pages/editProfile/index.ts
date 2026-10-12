@@ -9,20 +9,10 @@ import './index.scss';
 
 const formFields = [
   {
-    type: 'text',
-    id: 'first-name',
-    name: 'first-name',
-    label: 'First Name',
-    placeholder: 'Enter your first name',
-    value: 'name'
-  },
-  {
-    type: 'text',
-    id: 'last-name',
-    name: 'last-name',
-    label: 'Last Name',
-    placeholder: 'Enter your last name',
-    value: 'surname'
+    type: 'file',
+    id: 'avatar',
+    name: 'avatar',
+    label: 'Avatar'
   },
   {
     type: 'email',
@@ -34,10 +24,34 @@ const formFields = [
   },
   {
     type: 'text',
-    id: 'username',
-    name: 'username',
-    label: 'Username',
-    placeholder: 'Enter your username',
+    id: 'login',
+    name: 'login',
+    label: 'Login',
+    placeholder: 'Enter your login',
+    value: 'login'
+  },
+  {
+    type: 'text',
+    id: 'first_name',
+    name: 'first_name',
+    label: 'First Name',
+    placeholder: 'Enter your first name',
+    value: 'name'
+  },
+  {
+    type: 'text',
+    id: 'second_name',
+    name: 'second_name',
+    label: 'Second Name',
+    placeholder: 'Enter your second name',
+    value: 'surname'
+  },
+  {
+    type: 'text',
+    id: 'display_name',
+    name: 'display_name',
+    label: 'Display Name',
+    placeholder: 'Enter your display name',
     value: 'username'
   },
   {
@@ -47,14 +61,6 @@ const formFields = [
     label: 'Phone',
     placeholder: 'Enter your phone number',
     value: '+1234567890'
-  },
-  {
-    type: 'text',
-    id: 'login',
-    name: 'login',
-    label: 'Login',
-    placeholder: 'Enter your login',
-    value: 'login'
   }
 ];
 

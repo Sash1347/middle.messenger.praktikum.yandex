@@ -8,24 +8,24 @@ import './index.scss';
 const formFields = [
     {
         type: 'password',
-        id: 'current-password',
-        name: 'current-password',
+        id: 'old_password',
+        name: 'old_password',
         label: 'Current Password',
         placeholder: 'Enter your current password',
         value: ''
     },
     {
         type: 'password',
-        id: 'new-password',
-        name: 'new-password',
+        id: 'new_password',
+        name: 'new_password',
         label: 'New Password',
         placeholder: 'Enter your new password',
         value: ''
     },
     {
         type: 'password',
-        id: 'confirm-password',
-        name: 'confirm-password',
+        id: 'confirm_password',
+        name: 'confirm_password',
         label: 'Confirm Password',
         placeholder: 'Confirm your new password',
         value: ''
