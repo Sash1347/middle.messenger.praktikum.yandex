@@ -6,6 +6,12 @@
     "types": ["vite/client"],
     "allowArbitraryExtensions": true,
     "skipLibCheck": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "sourceMap": true,
+    "strictNullChecks": true,
 
     /* Bundler mode */
     "moduleResolution": "bundler",
@@ -15,10 +21,8 @@
     "noEmit": true,
 
     /* Linting */
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src"]
+  "include": ["src", "vite.config.ts"]
 }

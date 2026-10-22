@@ -1,24 +1,29 @@
 import Handlebars from 'handlebars';
 import template from './index.hbs?raw';
+import Page from '../../components/page';
 
 import RenderProfileBar from './components/profile-bar';
 import RenderProfileEdit from './components/profile-edit';
 import RenderChatCard from './components/chat-card';
-import RenderDialog from './components/dialog';
+import Dialog from './components/dialog';
 import RenderDialogHeader from './components/dialog/components/dialog-header';
 
 import './index.scss';
 
 const renderContent = Handlebars.compile(template);
 
-const RenderMainContent = () => {
+export default class ChatsPage extends Page {
+  protected render(): string {
     return renderContent({
         profileBar: RenderProfileBar(),
         profileEdit: RenderProfileEdit(),
         chatCard: RenderChatCard(),
-        dialog: RenderDialog(),
+        dialog: '',
         dialogHeader: RenderDialogHeader(),
     });
-};
+  }
 
-export default RenderMainContent;
+  protected componentDidMount(): void {
+    this.mountChild(new Dialog(), '.chat-layout__dialog');
+  }
+}

@@ -1,14 +1,24 @@
 import Handlebars from 'handlebars';
 import template from './index.hbs?raw';
+import Block from '../../../../../../components/block';
 
 import './index.scss';
 
-type MessageDirection = 'outgoing' | 'incoming';
+export type MessageDirection = 'outgoing' | 'incoming';
 
 const renderMessage = Handlebars.compile(template);
 
-const RenderMessage = (text: string, direction: MessageDirection) => {
-    return renderMessage({ text, direction });
-};
+export interface MessageProps {
+  text: string;
+  direction: MessageDirection;
+}
 
-export default RenderMessage;
+export default class MessageBlock extends Block<MessageProps> {
+  constructor(props: MessageProps) {
+    super(props);
+  }
+
+  protected render(): string {
+    return renderMessage(this.getProps());
+  }
+}

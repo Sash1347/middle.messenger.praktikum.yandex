@@ -3,9 +3,12 @@ import template from './index.hbs?raw';
 
 import Avatar from '../../assets/images/avatar.png';
 
-import FormLayout from '../../components/form';
+import Form from '../../components/form';
+import Page from '../../components/page';
+import { profileModel } from '../../models/profile';
 
 import './index.scss';
+import { editProfileFormSubmit } from './helper';
 
 const formFields = [
   {
@@ -36,7 +39,7 @@ const formFields = [
     name: 'first_name',
     label: 'First Name',
     placeholder: 'Enter your first name',
-    value: 'name'
+    value: 'Name'
   },
   {
     type: 'text',
@@ -44,7 +47,7 @@ const formFields = [
     name: 'second_name',
     label: 'Second Name',
     placeholder: 'Enter your second name',
-    value: 'surname'
+    value: 'Surname'
   },
   {
     type: 'text',
@@ -71,11 +74,21 @@ const formButton = {
 
 const renderContent = Handlebars.compile(template);
 
-const RenderEditProfileContent = () => {
+export default class EditProfilePage extends Page {
+  protected render(): string {
     return renderContent({
         avatar: Avatar,
-        form: FormLayout(formFields, formButton)
+        form: '<div id="form-host"></div>'
     });
-};
+  }
 
-export default RenderEditProfileContent;
+  protected componentDidMount(): void {
+    const values = new Map(Object.entries(profileModel.getProfile()));
+    const fields = formFields.map((field) => ({
+        ...field,
+        value: values.get(field.name) ?? field.value,
+    }));
+    const form = new Form({ fields, button: formButton, setup: editProfileFormSubmit });
+    this.mountChild(form, '#form-host');
+  }
+}

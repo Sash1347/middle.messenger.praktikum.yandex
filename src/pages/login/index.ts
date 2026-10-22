@@ -1,9 +1,13 @@
 import Handlebars from "handlebars";
 import template from "./index.hbs?raw";
 
-import FormLayout from "../../components/form";
+import Form from "../../components/form";
+import Page from "../../components/page";
+
+import { loginFormSubmit } from "./helper";
 
 import "./index.scss";
+
 
 const renderContent = Handlebars.compile(template);
 
@@ -27,14 +31,16 @@ const formFields = [
 ];
 
 const formButton = {
-  enabled: true,
   text: "Sign in",
 };
 
-const RenderLoginContent = () => {
-  return renderContent({
-    form: FormLayout(formFields, formButton),
-  });
-};
+export default class LoginPage extends Page {
+  protected render(): string {
+    return renderContent({ form: '<div id="form-host"></div>' });
+  }
 
-export default RenderLoginContent;
+  protected componentDidMount(): void {
+    const form = new Form({ fields: formFields, button: formButton, setup: loginFormSubmit });
+    this.mountChild(form, '#form-host');
+  }
+}

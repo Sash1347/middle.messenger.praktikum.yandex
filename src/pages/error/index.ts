@@ -1,5 +1,6 @@
 import Handlebars from 'handlebars';
 import template from './index.hbs?raw';
+import Page from '../../components/page';
 
 import { ErrorCode } from '../../constants/errors';
 
@@ -12,12 +13,12 @@ const ERROR_MESSAGES_PER_CODE: Record<ErrorCode, string> = {
     [ErrorCode.NotFound]: 'Page not found.'
 }
 
-const RenderErrorContent = () => {
-
+export default class ErrorPage extends Page {
+  protected render(): string {
     const urlParams = new URLSearchParams(window.location.search);
 
-    const errorCode = (urlParams.get('code') as ErrorCode) || ErrorCode.InternalServerError;
-    return renderContent({ errorCode: errorCode, errorMessage: ERROR_MESSAGES_PER_CODE[errorCode] || 'Something went wrong.' });
-};
-
-export default RenderErrorContent;
+    const code = urlParams.get('code');
+    const errorCode = code === ErrorCode.NotFound ? ErrorCode.NotFound : ErrorCode.InternalServerError;
+    return renderContent({ errorCode, errorMessage: ERROR_MESSAGES_PER_CODE[errorCode] });
+  }
+}

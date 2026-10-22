@@ -1,27 +1,53 @@
 import Handlebars from 'handlebars';
 import template from './index.hbs?raw';
 
-import Input from '../ui/input';
+import Block from '../block';
+import Input, { type InputProps } from '../ui/input';
 import Button from '../ui/button';
+import type { ButtonProps } from '../ui/button';
 
 import './index.scss';
 
 const renderContent = Handlebars.compile(template);
 
-interface FormItem {
-    id: string,
-    name: string,
-    label: string,
-    type: string,
-    placeholder?: string,
-    value?: string
+export interface FormProps {
+  fields: InputProps[];
+  button?: ButtonProps;
+  setup: (form: HTMLFormElement) => () => void;
 }
 
-const FormLayout = (form: Array<FormItem>, ButtonInfo?: any) => {
-    return renderContent({
-        inputs: form.map(item => Input(item)),
-        button: ButtonInfo ? Button(ButtonInfo) : ''
-    });
-};
+export default class FormBlock extends Block<FormProps> {
+  private cleanup: (() => void) | undefined;
 
-export default FormLayout;
+  constructor(props: FormProps) {
+    super(props);
+  }
+
+  protected componentDidMount(): void {
+    const form = this.getHost().querySelector('form');
+    if (!form) throw new Error('Form template must contain a form element');
+    this.cleanup = this.getProps().setup(form);
+  }
+
+  protected componentWillUpdate(): void {
+    this.cleanup?.();
+  }
+
+  protected componentDidUpdate(): void {
+    if (this.cleanup) this.componentDidMount();
+  }
+
+  protected componentWillUnmount(): void {
+    this.cleanup?.();
+    this.cleanup = undefined;
+  }
+
+  protected render(): string {
+    const { fields, button } = this.getProps();
+
+    return renderContent({
+      inputs: fields.map((field) => new Input(field).getContent()),
+      button: button ? new Button(button).getContent() : '',
+    });
+  }
+}

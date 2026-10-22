@@ -1,9 +1,13 @@
 import Handlebars from 'handlebars';
 import template from './index.hbs?raw';
 
-import FormLayout from '../../components/form';
+import Form from '../../components/form';
+import Page from '../../components/page';
+
+import { registrationFormSubmit } from './helper';
 
 import './index.scss';
+
 
 const renderContent = Handlebars.compile(template);
 
@@ -61,14 +65,16 @@ const formFields = [
 ];
 
 const formButton = {
-    enabled: true,
     text: 'Sign up'
 };
 
-const RenderRegistrationContent = () => {
-    return renderContent({
-        form: FormLayout(formFields, formButton)
-    });
-};
+export default class RegistrationPage extends Page {
+    protected render(): string {
+        return renderContent({ form: '<div id="form-host"></div>' });
+    }
 
-export default RenderRegistrationContent;
+    protected componentDidMount(): void {
+        const form = new Form({ fields: formFields, button: formButton, setup: registrationFormSubmit });
+        this.mountChild(form, '#form-host');
+    }
+}

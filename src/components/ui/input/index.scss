@@ -1,16 +1,39 @@
-@use '../../../assets/styles/variables' as *;
+@use "../../../assets/styles/variables" as *;
 
 .input_field {
-        width: 100%;
-        border: none;
-        outline: none;
-        padding: 8px 16px;
-        border-radius: 12px;
-        background-color: $input-background-color;
-        color: $input-text-color;
+  width: 100%;
+  border: none;
+  outline: none;
+  padding: 8px 16px;
+  margin-bottom: 4px;
+  border-radius: 12px;
+  background-color: $input-background-color;
+  color: $input-text-color;
 
-        &::placeholder {
-            color: rgba(255, 255, 255, 0.486);
-            opacity: 1;
-        }
+  &::placeholder {
+    color: rgb(255 255 255 / 48.6%);
+    opacity: 1;
+  }
+}
+
+.input_field_label {
+  margin-bottom: 8px;
+}
+
+.input_field_error {
+  color: $input-error-color;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  opacity: 0;
+  transform: translateX(-14px);
+  will-change: opacity, transform;
+  margin-bottom: 8px;
+}
+
+.input_field_error_visible {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
