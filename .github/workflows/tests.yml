@@ -26,8 +26,6 @@ jobs:
       run: npm ci
     - name: Lint and typecheck
       run: npm run lint
-    - name: Build application
-      run: npm run build
     - name: Сheck if the repository is private
       if: ${{github.event.repository.private}}
       run: exit 1
@@ -54,3 +52,6 @@ jobs:
 
     - name: Run tests (server)
       run: bats --formatter pretty /tmp/tests-middle-frontend/tests/node_build.bats
+
+    - name: Build application
+      run: npm run build
