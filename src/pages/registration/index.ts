@@ -2,7 +2,6 @@ import Handlebars from 'handlebars';
 import template from './index.hbs?raw';
 
 import Form from '../../components/form';
-import Page from '../../components/page';
 
 import { registrationFormSubmit } from './helper';
 
@@ -68,13 +67,9 @@ const formButton = {
     text: 'Sign up'
 };
 
-export default class RegistrationPage extends Page {
-    protected render(): string {
-        return renderContent({ form: '<div id="form-host"></div>' });
-    }
-
-    protected componentDidMount(): void {
-        const form = new Form({ fields: formFields, button: formButton, setup: registrationFormSubmit });
-        this.mountChild(form, '#form-host');
-    }
+export default function RenderRegistrationContent(renderToHtml: (html: string) => void) {
+    renderToHtml(renderContent({ form: Form({ fields: formFields, button: formButton }) }));
+    const form = document.querySelector('form');
+    if (!form) throw new Error('Registration form not found');
+    return registrationFormSubmit(form);
 }

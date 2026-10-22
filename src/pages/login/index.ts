@@ -2,7 +2,6 @@ import Handlebars from "handlebars";
 import template from "./index.hbs?raw";
 
 import Form from "../../components/form";
-import Page from "../../components/page";
 
 import { loginFormSubmit } from "./helper";
 
@@ -34,13 +33,9 @@ const formButton = {
   text: "Sign in",
 };
 
-export default class LoginPage extends Page {
-  protected render(): string {
-    return renderContent({ form: '<div id="form-host"></div>' });
-  }
-
-  protected componentDidMount(): void {
-    const form = new Form({ fields: formFields, button: formButton, setup: loginFormSubmit });
-    this.mountChild(form, '#form-host');
-  }
+export default function RenderLoginContent(renderToHtml: (html: string) => void) {
+  renderToHtml(renderContent({ form: Form({ fields: formFields, button: formButton }) }));
+  const form = document.querySelector('form');
+  if (!form) throw new Error('Login form not found');
+  return loginFormSubmit(form);
 }

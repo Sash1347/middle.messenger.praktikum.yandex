@@ -2,7 +2,6 @@ import Handlebars from "handlebars";
 import template from "./index.hbs?raw";
 
 import Form from "../../components/form";
-import Page from "../../components/page";
 import { changePasswordFormSubmit } from "./helper";
 
 import "./index.scss";
@@ -41,13 +40,9 @@ const formButton = {
 
 const renderContent = Handlebars.compile(template);
 
-export default class ChangePasswordPage extends Page {
-  protected render(): string {
-    return renderContent({ form: '<div id="form-host"></div>' });
-  }
-
-  protected componentDidMount(): void {
-    const form = new Form({ fields: formFields, button: formButton, setup: changePasswordFormSubmit });
-    this.mountChild(form, '#form-host');
-  }
+export default function RenderChangePasswordContent(renderToHtml: (html: string) => void) {
+  renderToHtml(renderContent({ form: Form({ fields: formFields, button: formButton }) }));
+  const form = document.querySelector('form');
+  if (!form) throw new Error('Change password form not found');
+  return changePasswordFormSubmit(form);
 }

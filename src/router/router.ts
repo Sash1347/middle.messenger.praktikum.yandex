@@ -6,9 +6,10 @@ import HomePage from '../pages/home';
 import ProfilePage from '../pages/profile';
 import EditProfilePage from '../pages/editProfile';
 import ChangePasswordPage from '../pages/changePassword';
-import type Page from '../components/page';
 
-const routes: Record<string, new () => Page> = {
+type PageRenderer = (renderToHtml: (html: string) => void) => void | (() => void);
+
+const routes: Record<string, PageRenderer> = {
   '/login': LoginPage,
   '/registration': RegistrationPage,
   '/main': ChatsPage,
@@ -19,7 +20,7 @@ const routes: Record<string, new () => Page> = {
   '/change-password': ChangePasswordPage,
 };
 
-let currentPage: Page | undefined;
+let cleanupPage: void | (() => void);
 
 export function navigate(path: string, queryParams?: Record<string, string>): void {
   const queryString = queryParams ? '?' + new URLSearchParams(queryParams).toString() : '';
@@ -30,17 +31,21 @@ export function navigate(path: string, queryParams?: Record<string, string>): vo
 export function renderRoute(): void {
   const path = window.location.pathname;
 
-  const PageConstructor = Object.hasOwn(routes, path) ? routes[path] : undefined;
+  const page = Object.hasOwn(routes, path) ? routes[path] : undefined;
 
-  if (!PageConstructor) {
+  if (!page) {
     history.replaceState({}, '', '/error?code=404');
     renderRoute();
     return;
   }
 
-  currentPage?.unmount();
-  currentPage = new PageConstructor();
-  currentPage.mount('#app');
+  const root = document.querySelector('#app');
+  if (!root) throw new Error('Application root not found');
+  cleanupPage?.();
+  cleanupPage = undefined;
+  cleanupPage = page((html) => {
+    root.innerHTML = html;
+  });
 }
 
 window.addEventListener('popstate', renderRoute);

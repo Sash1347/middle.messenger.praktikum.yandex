@@ -4,7 +4,6 @@ import template from './index.hbs?raw';
 import Avatar from '../../assets/images/avatar.png';
 
 import Form from '../../components/form';
-import Page from '../../components/page';
 import { profileModel } from '../../models/profile';
 
 import './index.scss';
@@ -74,21 +73,17 @@ const formButton = {
 
 const renderContent = Handlebars.compile(template);
 
-export default class EditProfilePage extends Page {
-  protected render(): string {
-    return renderContent({
-        avatar: Avatar,
-        form: '<div id="form-host"></div>'
-    });
-  }
-
-  protected componentDidMount(): void {
+export default function RenderEditProfileContent(renderToHtml: (html: string) => void) {
     const values = new Map(Object.entries(profileModel.getProfile()));
     const fields = formFields.map((field) => ({
         ...field,
         value: values.get(field.name) ?? field.value,
     }));
-    const form = new Form({ fields, button: formButton, setup: editProfileFormSubmit });
-    this.mountChild(form, '#form-host');
-  }
+    renderToHtml(renderContent({
+        avatar: Avatar,
+        form: Form({ fields, button: formButton }),
+    }));
+    const form = document.querySelector('form');
+    if (!form) throw new Error('Edit profile form not found');
+    return editProfileFormSubmit(form);
 }

@@ -1,6 +1,5 @@
 import Handlebars from 'handlebars';
 import template from './index.hbs?raw';
-import Block from '../../block';
 
 import './index.scss';
 
@@ -16,12 +15,6 @@ export interface InputProps {
   errorText?: string;
 }
 
-export default class InputBlock extends Block<InputProps> {
-  constructor(props: InputProps) {
-    super(props);
-  }
-
-  protected render(): string {
-    return renderContent(this.getProps());
-  }
+export default function Input(props: InputProps): string {
+  return renderContent(props);
 }
