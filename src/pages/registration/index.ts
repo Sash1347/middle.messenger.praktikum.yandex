@@ -68,7 +68,7 @@ const formButton = {
 };
 
 export default function RenderRegistrationContent(renderToHtml: (html: string) => void) {
-    renderToHtml(renderContent({ form: Form({ fields: formFields, button: formButton }) }));
+    renderToHtml(renderContent({ form: new Form({ fields: formFields, button: formButton }).render() }));
     const form = document.querySelector('form');
     if (!form) throw new Error('Registration form not found');
     return registrationFormSubmit(form);

@@ -1,5 +1,6 @@
 import Handlebars from 'handlebars';
 import template from './index.hbs?raw';
+import Block from '../../Block';
 
 import './index.scss';
 
@@ -12,11 +13,17 @@ export interface ButtonProps {
   className?: string;
 }
 
-export default function Button(props: ButtonProps): string {
-    const { enabled, disabled, text, className } = props;
-    return renderContent({
+export default class Button extends Block<ButtonProps> {
+  constructor(props: ButtonProps) {
+    super(props, renderContent);
+  }
+
+  protected getTemplateData(): object {
+    const { enabled, disabled, text, className } = this.props;
+    return {
       disabled: disabled ?? enabled === false,
       text,
       className,
-    });
+    };
+  }
 }

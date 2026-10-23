@@ -34,7 +34,7 @@ const formButton = {
 };
 
 export default function RenderLoginContent(renderToHtml: (html: string) => void) {
-  renderToHtml(renderContent({ form: Form({ fields: formFields, button: formButton }) }));
+  renderToHtml(renderContent({ form: new Form({ fields: formFields, button: formButton }).render() }));
   const form = document.querySelector('form');
   if (!form) throw new Error('Login form not found');
   return loginFormSubmit(form);

@@ -1,5 +1,6 @@
 import Handlebars from 'handlebars';
 import template from './index.hbs?raw';
+import Block from '../../../../../../components/Block';
 
 import './index.scss';
 
@@ -12,6 +13,8 @@ export interface MessageProps {
   direction: MessageDirection;
 }
 
-export default function Message(props: MessageProps): string {
-  return renderMessage(props);
+export default class Message extends Block<MessageProps> {
+  constructor(props: MessageProps) {
+    super(props, renderMessage);
+  }
 }

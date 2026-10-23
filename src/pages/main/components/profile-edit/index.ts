@@ -1,5 +1,6 @@
 import Handlebars from 'handlebars';
 import template from './index.hbs?raw';
+import Block from '../../../../components/Block';
 
 import EditIcon from '../../../../assets/icons/edit-icon.svg';
 
@@ -7,8 +8,12 @@ import './index.scss';
 
 const renderProfileEdit = Handlebars.compile(template);
 
-const RenderProfileEdit = () => {
-    return renderProfileEdit({ editIcon: EditIcon });
-};
+export default class ProfileEdit extends Block {
+    constructor() {
+        super({}, renderProfileEdit);
+    }
 
-export default RenderProfileEdit;
+    protected getTemplateData(): object {
+        return { editIcon: EditIcon };
+    }
+}

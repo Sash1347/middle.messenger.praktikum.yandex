@@ -16,20 +16,17 @@
   }
 }
 
-.input_field_label {
-  margin-bottom: 8px;
-}
-
 .input_field_error {
   color: $input-error-color;
-  height: 16px;
+  contain: inline-size;
   display: flex;
   align-items: center;
   font-size: 14px;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
   opacity: 0;
   transform: translateX(-14px);
   will-change: opacity, transform;
-  margin-bottom: 8px;
 }
 
 .input_field_error_visible {

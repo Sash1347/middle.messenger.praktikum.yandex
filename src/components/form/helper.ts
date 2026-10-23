@@ -1,5 +1,5 @@
 import { inputValidationHelper } from "../ui/input/helper";
-import { isFieldValid } from "./validation";
+import { getFieldError } from "./validation";
 
 export type FormValues = Record<string, FormDataEntryValue>;
 
@@ -25,9 +25,9 @@ export const bindForm = (
     const newPassword = form.querySelector<HTMLInputElement>(
       '[name="new_password"]',
     )?.value;
-    const valid = isFieldValid(input.name, input.value, newPassword);
-    inputValidationHelper(input, !valid);
-    return valid;
+    const error = getFieldError(input.name, input.value, newPassword);
+    inputValidationHelper(input, error);
+    return error === null;
   };
 
   form.querySelectorAll("input").forEach((input) => {

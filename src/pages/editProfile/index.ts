@@ -81,7 +81,7 @@ export default function RenderEditProfileContent(renderToHtml: (html: string) =>
     }));
     renderToHtml(renderContent({
         avatar: Avatar,
-        form: Form({ fields, button: formButton }),
+        form: new Form({ fields, button: formButton }).render(),
     }));
     const form = document.querySelector('form');
     if (!form) throw new Error('Edit profile form not found');

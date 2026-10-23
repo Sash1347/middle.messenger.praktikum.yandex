@@ -1,5 +1,6 @@
 import Handlebars from 'handlebars';
 import template from './index.hbs?raw';
+import Block from '../../../../components/Block';
 import Form from '../../../../components/form';
 import { chatModel } from '../../../../models/chat';
 import { dialogFormSubmit } from './helper';
@@ -8,14 +9,20 @@ import './index.scss';
 
 const renderDialog = Handlebars.compile(template);
 
-export default function RenderDialog(): string {
-  return renderDialog({
-    messages: chatModel.getMessages().map((message) => Message(message)),
-    input: Form({
-      fields: [{ type: 'text', id: 'message', name: 'message', placeholder: 'Type a message' }],
-      button: { text: 'Send' },
-    }),
-  });
+export default class Dialog extends Block {
+  constructor() {
+    super({}, renderDialog);
+  }
+
+  protected getTemplateData(): object {
+    return {
+      messages: chatModel.getMessages().map((message) => new Message(message).render()),
+      input: new Form({
+        fields: [{ type: 'text', id: 'message', name: 'message', placeholder: 'Type a message' }],
+        button: { text: 'Send' },
+      }).render(),
+    };
+  }
 }
 
 export function setupDialog(): () => void {
@@ -24,7 +31,7 @@ export function setupDialog(): () => void {
   if (!form || !messages) throw new Error('Dialog elements not found');
 
   return dialogFormSubmit(form, () => {
-    messages.innerHTML = chatModel.getMessages().map((message) => Message(message)).join('');
+    messages.innerHTML = chatModel.getMessages().map((message) => new Message(message).render()).join('');
     form.reset();
     form.querySelector('input')?.focus();
     messages.scrollTop = messages.scrollHeight;

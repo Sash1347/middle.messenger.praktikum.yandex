@@ -41,7 +41,7 @@ const formButton = {
 const renderContent = Handlebars.compile(template);
 
 export default function RenderChangePasswordContent(renderToHtml: (html: string) => void) {
-  renderToHtml(renderContent({ form: Form({ fields: formFields, button: formButton }) }));
+  renderToHtml(renderContent({ form: new Form({ fields: formFields, button: formButton }).render() }));
   const form = document.querySelector('form');
   if (!form) throw new Error('Change password form not found');
   return changePasswordFormSubmit(form);
