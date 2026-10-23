@@ -13,11 +13,11 @@ const renderContent = Handlebars.compile(template);
 
 export default function RenderMainContent(renderToHtml: (html: string) => void) {
     renderToHtml(renderContent({
-        profileBar: new RenderProfileBar().render(),
-        profileEdit: new RenderProfileEdit().render(),
-        chatCard: new RenderChatCard().render(),
-        dialog: new RenderDialog().render(),
-        dialogHeader: new RenderDialogHeader().render(),
+        profileBar: new RenderProfileBar().element()?.outerHTML ?? '',
+        profileEdit: new RenderProfileEdit().element()?.outerHTML ?? '',
+        chatCard: new RenderChatCard().element()?.outerHTML ?? '',
+        dialog: new RenderDialog().element()?.outerHTML ?? '',
+        dialogHeader: new RenderDialogHeader().element()?.outerHTML ?? '',
     }));
     return setupDialog();
 }

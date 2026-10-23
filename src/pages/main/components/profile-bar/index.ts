@@ -1,4 +1,3 @@
-import Handlebars from 'handlebars';
 import template from './index.hbs?raw';
 import Block from '../../../../components/Block';
 
@@ -6,14 +5,15 @@ import avatar from '../../../../assets/images/avatar.png';
 
 import './index.scss';
 
-const renderProfileBar = Handlebars.compile(template);
+interface ProfileBarProps {
+    avatar: string;
+    name: string;
+}
 
-export default class ProfileBar extends Block {
+export default class ProfileBar extends Block<ProfileBarProps> {
+    protected template = template;
+
     constructor() {
-        super({}, renderProfileBar);
-    }
-
-    protected getTemplateData(): object {
-        return { avatar, name: 'My Profile' };
+        super({ avatar, name: 'My Profile' });
     }
 }

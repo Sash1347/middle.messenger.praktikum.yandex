@@ -1,10 +1,7 @@
-import Handlebars from 'handlebars';
 import template from './index.hbs?raw';
 import Block from '../../Block';
 
 import './index.scss';
-
-const renderContent = Handlebars.compile(template);
 
 export interface ButtonProps {
   enabled?: boolean;
@@ -13,17 +10,20 @@ export interface ButtonProps {
   className?: string;
 }
 
-export default class Button extends Block<ButtonProps> {
-  constructor(props: ButtonProps) {
-    super(props, renderContent);
-  }
+interface ButtonTemplateProps {
+  disabled: boolean;
+  text: string;
+  className?: string;
+}
 
-  protected getTemplateData(): object {
-    const { enabled, disabled, text, className } = this.props;
-    return {
+export default class Button extends Block<ButtonTemplateProps> {
+  protected template = template;
+
+  constructor({ enabled, disabled, text, className }: ButtonProps) {
+    super({
       disabled: disabled ?? enabled === false,
       text,
       className,
-    };
+    });
   }
 }

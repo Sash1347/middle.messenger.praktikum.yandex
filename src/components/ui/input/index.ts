@@ -1,10 +1,7 @@
-import Handlebars from 'handlebars';
 import template from './index.hbs?raw';
 import Block from '../../Block';
 
 import './index.scss';
-
-const renderContent = Handlebars.compile(template);
 
 export interface InputProps {
   type: string;
@@ -17,7 +14,9 @@ export interface InputProps {
 }
 
 export default class Input extends Block<InputProps> {
+  protected template = template;
+
   constructor(props: InputProps) {
-    super(props, renderContent);
+    super(props);
   }
 }
