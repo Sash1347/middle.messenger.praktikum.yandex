@@ -1,0 +1,10 @@
+<div class="dialog">
+    <div class="dialog__messages" ref="messages">
+        {{#each messages as |msg|}}
+            {{{Message text=msg.text direction=msg.direction}}}
+        {{/each}}
+    </div>
+    <div class="dialog__input">
+        {{{Form fields=form.fields button=form.button onSubmit=form.onSubmit ref="input"}}}
+    </div>
+</div>

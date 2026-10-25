@@ -1,0 +1,11 @@
+.profile-edit {
+    &__icon {
+        width: 24px;
+        height: 24px;
+        cursor: pointer;
+
+        &:hover {
+            opacity: 0.8;
+        }
+    }
+}

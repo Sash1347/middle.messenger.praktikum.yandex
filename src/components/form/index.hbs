@@ -1,0 +1,8 @@
+<form class="form-layout" novalidate>
+    {{#each fields}}
+        {{{Input type=type id=id name=name label=label placeholder=placeholder value=value errorText=errorText}}}
+    {{/each}}
+    {{#if button}}
+        {{{Button text=button.text enabled=button.enabled disabled=button.disabled className=button.className}}}
+    {{/if}}
+</form>
