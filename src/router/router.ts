@@ -6,8 +6,9 @@ import HomePage from '../pages/home';
 import ProfilePage from '../pages/profile';
 import EditProfilePage from '../pages/editProfile';
 import ChangePasswordPage from '../pages/changePassword';
+import type { RenderContent } from '../pages/render';
 
-type PageRenderer = (renderToHtml: (html: string) => void) => void | (() => void);
+type PageRenderer = (renderToHtml: RenderContent) => void | (() => void);
 
 const routes: Record<string, PageRenderer> = {
   '/login': LoginPage,
@@ -43,8 +44,12 @@ export function renderRoute(): void {
   if (!root) throw new Error('Application root not found');
   cleanupPage?.();
   cleanupPage = undefined;
-  cleanupPage = page((html) => {
-    root.innerHTML = html;
+  cleanupPage = page((content) => {
+    if (typeof content === 'string') {
+      root.innerHTML = content;
+    } else {
+      root.replaceChildren(content);
+    }
   });
 }
 

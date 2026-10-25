@@ -1,6 +1,5 @@
-import { bindForm } from '../../components/form/helper';
+import type { FormValues } from '../../components/form/helper';
 
-export const registrationFormSubmit = (form: HTMLFormElement) =>
-  bindForm(form, (data) => {
-    console.log(data);
-  });
+export const registrationFormSubmit = (data: FormValues): void => {
+  console.log(data);
+};

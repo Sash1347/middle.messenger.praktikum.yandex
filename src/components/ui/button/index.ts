@@ -1,5 +1,6 @@
 import template from './index.hbs?raw';
-import Block from '../../Block';
+import Block, { type BlockOwnProps } from '../../Block';
+import { registerComponent } from '../../ComponentRegistry';
 
 import './index.scss';
 
@@ -10,13 +11,15 @@ export interface ButtonProps {
   className?: string;
 }
 
-interface ButtonTemplateProps {
+interface ButtonTemplateProps extends BlockOwnProps {
   disabled: boolean;
   text: string;
   className?: string;
 }
 
 export default class Button extends Block<ButtonTemplateProps> {
+  static componentName = 'Button';
+
   protected template = template;
 
   constructor({ enabled, disabled, text, className }: ButtonProps) {
@@ -26,4 +29,7 @@ export default class Button extends Block<ButtonTemplateProps> {
       className,
     });
   }
+
 }
+
+registerComponent(Button);

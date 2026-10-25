@@ -1,9 +1,9 @@
-import Handlebars from 'handlebars';
 import template from './index.hbs?raw';
 
 import Avatar from '../../assets/images/avatar.png';
 
-import Form from '../../components/form';
+import '../../components/form';
+import { renderPage, type RenderContent } from '../render';
 import { profileModel } from '../../models/profile';
 
 import './index.scss';
@@ -71,19 +71,14 @@ const formButton = {
   text: 'Save'
 };
 
-const renderContent = Handlebars.compile(template);
-
-export default function RenderEditProfileContent(renderToHtml: (html: string) => void) {
+export default function RenderEditProfileContent(renderToHtml: RenderContent) {
     const values = new Map(Object.entries(profileModel.getProfile()));
     const fields = formFields.map((field) => ({
         ...field,
         value: values.get(field.name) ?? field.value,
     }));
-    renderToHtml(renderContent({
+    return renderPage(template, {
         avatar: Avatar,
-        form: new Form({ fields, button: formButton }).element()?.outerHTML ?? '',
-    }));
-    const form = document.querySelector('form');
-    if (!form) throw new Error('Edit profile form not found');
-    return editProfileFormSubmit(form);
+        fields, button: formButton, onSubmit: editProfileFormSubmit,
+    }, renderToHtml);
 }

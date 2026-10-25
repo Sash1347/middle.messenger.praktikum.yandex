@@ -1,42 +1,51 @@
 import template from './index.hbs?raw';
-import Block from '../../../../components/Block';
-import Form from '../../../../components/form';
-import { chatModel } from '../../../../models/chat';
+import Block, { type BlockOwnProps } from '../../../../components/Block';
+import { registerComponent } from '../../../../components/ComponentRegistry';
+import type { FormProps } from '../../../../components/form';
+import '../../../../components/form';
+import { chatModel, type ChatMessage } from '../../../../models/chat';
 import { dialogFormSubmit } from './helper';
-import Message from './components/message';
+import './components/message';
 import './index.scss';
 
-interface DialogTemplateProps {
-  messages: string[];
-  input: string;
+interface DialogTemplateProps extends BlockOwnProps {
+  messages: ChatMessage[];
+  form: FormProps;
 }
 
 export default class Dialog extends Block<DialogTemplateProps> {
+  static componentName = 'Dialog';
+
   protected template = template;
 
   constructor() {
     super({
-      messages: chatModel.getMessages().map((message) => new Message(message).element()?.outerHTML ?? ''),
-      input: new Form({
+      messages: chatModel.getMessages(),
+      form: {
         fields: [{ type: 'text', id: 'message', name: 'message', placeholder: 'Type a message' }],
         button: { text: 'Send' },
-      }).element()?.outerHTML ?? '',
+        onSubmit: (data) => {
+          dialogFormSubmit(data);
+          this.updateMessages();
+        },
+      },
     });
   }
-}
 
-export function setupDialog(): () => void {
-  const form = document.querySelector<HTMLFormElement>('.dialog__input form');
-  const messages = document.querySelector<HTMLElement>('.dialog__messages');
-  if (!form || !messages) throw new Error('Dialog elements not found');
+  private updateMessages(): void {
+    this.setProps({
+      messages: chatModel.getMessages(),
+    });
+    const messages = this.refs.messages;
+    const form = this.refs.input;
+    if (!(messages instanceof HTMLElement) || !(form instanceof HTMLFormElement)) {
+      throw new Error('Dialog elements not found');
+    }
 
-  return dialogFormSubmit(form, () => {
-    messages.innerHTML = chatModel
-      .getMessages()
-      .map((message) => new Message(message).element()?.outerHTML ?? '')
-      .join('');
     form.reset();
     form.querySelector('input')?.focus();
     messages.scrollTop = messages.scrollHeight;
-  });
+  }
 }
+
+registerComponent(Dialog);

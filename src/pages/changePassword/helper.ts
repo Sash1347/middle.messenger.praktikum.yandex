@@ -1,6 +1,5 @@
-import { bindForm } from '../../components/form/helper';
+import type { FormValues } from '../../components/form/helper';
 
-export const changePasswordFormSubmit = (form: HTMLFormElement) =>
-  bindForm(form, (data) => {
-    console.log(data);
-  });
+export const changePasswordFormSubmit = (data: FormValues): void => {
+  console.log(data);
+};

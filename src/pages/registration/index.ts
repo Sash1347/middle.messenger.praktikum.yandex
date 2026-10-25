@@ -1,14 +1,12 @@
-import Handlebars from 'handlebars';
 import template from './index.hbs?raw';
 
-import Form from '../../components/form';
+import '../../components/form';
+import { renderPage, type RenderContent } from '../render';
 
 import { registrationFormSubmit } from './helper';
 
 import './index.scss';
 
-
-const renderContent = Handlebars.compile(template);
 
 const formFields = [
     {
@@ -67,9 +65,8 @@ const formButton = {
     text: 'Sign up'
 };
 
-export default function RenderRegistrationContent(renderToHtml: (html: string) => void) {
-    renderToHtml(renderContent({ form: new Form({ fields: formFields, button: formButton }).element()?.outerHTML ?? '' }));
-    const form = document.querySelector('form');
-    if (!form) throw new Error('Registration form not found');
-    return registrationFormSubmit(form);
+export default function RenderRegistrationContent(renderToHtml: RenderContent) {
+    return renderPage(template, {
+        fields: formFields, button: formButton, onSubmit: registrationFormSubmit,
+    }, renderToHtml);
 }

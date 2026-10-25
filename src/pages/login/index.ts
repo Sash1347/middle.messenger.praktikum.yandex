@@ -1,14 +1,12 @@
-import Handlebars from "handlebars";
 import template from "./index.hbs?raw";
 
-import Form from "../../components/form";
+import "../../components/form";
+import { renderPage, type RenderContent } from '../render';
 
 import { loginFormSubmit } from "./helper";
 
 import "./index.scss";
 
-
-const renderContent = Handlebars.compile(template);
 
 const formFields = [
   {
@@ -33,9 +31,8 @@ const formButton = {
   text: "Sign in",
 };
 
-export default function RenderLoginContent(renderToHtml: (html: string) => void) {
-  renderToHtml(renderContent({ form: new Form({ fields: formFields, button: formButton }).element()?.outerHTML ?? '' }));
-  const form = document.querySelector('form');
-  if (!form) throw new Error('Login form not found');
-  return loginFormSubmit(form);
+export default function RenderLoginContent(renderToHtml: RenderContent) {
+  return renderPage(template, {
+    fields: formFields, button: formButton, onSubmit: loginFormSubmit,
+  }, renderToHtml);
 }
