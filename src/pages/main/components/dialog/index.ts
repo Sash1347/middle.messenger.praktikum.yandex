@@ -32,6 +32,18 @@ export default class Dialog extends Block<DialogTemplateProps> {
     });
   }
 
+  protected componentDidMount(): void {
+    this.element()?.addEventListener('chat:selected', this.handleChatSelected);
+  }
+
+  protected componentWillUnmount(): void {
+    this.element()?.removeEventListener('chat:selected', this.handleChatSelected);
+  }
+
+  private handleChatSelected = (): void => {
+    this.updateMessages();
+  };
+
   private updateMessages(): void {
     this.setProps({
       messages: chatModel.getMessages(),

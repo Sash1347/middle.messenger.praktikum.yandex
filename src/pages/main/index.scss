@@ -32,8 +32,40 @@
         gap: 8px;
         background-color: $chat-background-color;
         padding: 10px;
-        overflow: auto;
         height: 100%;
+        min-height: 0;
+        overflow: hidden;
+    }
+
+    &__chats-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        h2 {
+            margin: 0;
+            font-size: 18px;
+        }
+    }
+
+    &__new-chat {
+        padding: 8px 12px;
+        border: 0;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    &__chats-list {
+        display: flex;
+        height: 100%;
+        flex-direction: column;
+        gap: 8px;
+        min-height: 0;
+        overflow: hidden auto;
+        background-color: rgb(87 87 87 / 28.8%);
+        padding: 10px;
+        border-radius: 12px;
+
     }
 
     &__dialog {

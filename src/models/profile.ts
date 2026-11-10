@@ -5,16 +5,18 @@ export interface UserProfile {
   email: string;
   display_name: string;
   phone: string;
+  avatar: string | null;
 }
 
 class ProfileModel {
   private profile: UserProfile = {
-    first_name: 'Name',
-    second_name: 'Surname',
-    login: 'login',
-    email: 'email@example.com',
-    display_name: 'username',
-    phone: '+1234567890',
+    first_name: '',
+    second_name: '',
+    login: '',
+    email: '',
+    display_name: '',
+    phone: '',
+    avatar: null,
   };
 
   getProfile(): UserProfile {

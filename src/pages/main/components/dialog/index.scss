@@ -17,6 +17,14 @@
         margin-top: auto;
     }
 
+    &__empty {
+        align-self: center;
+        margin: auto;
+        color: #657477;
+        font-size: 14px;
+        text-align: center;
+    }
+
     &__input {
         background-color: $chat-background-color;
         padding: 12px;

@@ -1,5 +1,8 @@
 <div class="dialog">
     <div class="dialog__messages" ref="messages">
+        {{#unless messages.length}}
+            <p class="dialog__empty">No messages</p>
+        {{/unless}}
         {{#each messages as |msg|}}
             {{{Message text=msg.text direction=msg.direction}}}
         {{/each}}

@@ -3,11 +3,14 @@
         <div class="chat-layout__profile">
            {{{ProfileBar}}}
            {{{ProfileEdit}}}
+           <span class="btn-logout">Logout</span>
         </div>
         <div class="chat-layout__chats">
-           {{{ChatCard}}}
-           {{{ChatCard}}}
-           {{{ChatCard}}}
+           <div class="chat-layout__chats-toolbar">
+               <h2>Chats</h2>
+               <button class="chat-layout__new-chat" type="button">New chat</button>
+           </div>
+           <div class="chat-layout__chats-list" aria-live="polite">Loading chats...</div>
         </div>
    </aside>
    <section class="chat-layout__conversation">

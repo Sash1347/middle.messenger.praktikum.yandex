@@ -38,7 +38,15 @@ button, input {
   font-family: cursive;
   font-size: 16px;
   min-height: 40px;
-  min-width: 400px;
+}
+
+button {
+  color: white;
+  background-color: $button-background-color;
+}
+
+input {
+  min-width: 300px;
 }
 
 a {

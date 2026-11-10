@@ -1,5 +1,15 @@
 <div class="dialog-header">
-    <img class="dialog-header__avatar" src={{userAvatar}} alt="User Avatar">
-    <span class="dialog-header__name">{{userName}}</span>
-    <img class="dialog-header__delete" src={{deleteIcon}} alt="Delete Icon">
+    <div class="dialog-header__details">
+        <span class="dialog-header__name">{{userName}}</span>
+        <span class="dialog-header__users"></span>
+    </div>
+    <div class="dialog-header__actions">
+        <button class="dialog-header__add-user" type="button" disabled>Add user</button>
+        <button class="dialog-header__remove-user" type="button" disabled>Remove user</button>
+        <button class="dialog-header__delete" type="button" title="Delete chat" aria-label="Delete chat" disabled>
+            <img src="{{deleteIcon}}" alt="">
+        </button>
+    </div>
 </div>
+
+

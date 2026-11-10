@@ -12,21 +12,53 @@
     left: 50%;
     border-radius: 12px;
 
-    &__avatar {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        margin-right: 12px;
+    &__details {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+    }
+
+    &__users {
+        font-size: 12px;
+    }
+
+    &__actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-left: auto;
+    }
+
+    &__add-user,
+    &__remove-user {
+        padding: 6px 10px;
+        border: 0;
+        border-radius: 4px;
+        cursor: pointer;
     }
 
     &__delete {
+        display: grid;
+        place-items: center;
+        width: 36px;
+        height: 36px;
+        padding: 6px;
+        border: 0;
+        background: transparent;
+        cursor: pointer;
+
+        img {
         width: 24px;
         height: 24px;
-        margin-left: auto;
-        cursor: pointer;
+        }
 
         &:hover {
             opacity: 0.8;
         }
+    }
+
+    button:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
     }
 }

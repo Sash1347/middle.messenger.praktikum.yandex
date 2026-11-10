@@ -1,5 +1,5 @@
-import { renderRoute } from './router/router';
+import { initRouter } from './router/router';
 
 import './assets/styles/style.scss';
 
-renderRoute();
+initRouter();

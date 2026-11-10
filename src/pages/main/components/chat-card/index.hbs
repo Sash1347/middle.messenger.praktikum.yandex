@@ -1,4 +1,3 @@
- <div class="chat-card">
-    <img class="chat-card__avatar" src="{{avatar}}" alt="avatar">
+<button class="chat-card{{#if selected}} chat-card--selected{{/if}}" type="button" aria-pressed="{{selected}}">
     <span class="chat-card__name">{{name}}</span>
-</div>
+</button>
