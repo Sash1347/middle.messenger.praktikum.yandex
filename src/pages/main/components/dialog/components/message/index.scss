@@ -1,0 +1,28 @@
+@use '../../../../../../assets/styles/variables' as *;
+
+.message {
+    display: flex;
+
+    &--outgoing {
+        justify-content: flex-end;
+
+        .message__bubble {
+            background-color: $message-own-background-color;
+        }
+    }
+
+    &--incoming {
+        justify-content: flex-start;
+
+        .message__bubble {
+            background-color: $message-other-background-color;
+        }
+    }
+
+    &__bubble {
+        max-width: 70%;
+        display: flex;
+        padding: 8px 16px;
+        border-radius: 12px;
+    }
+}
