@@ -22,10 +22,6 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
-    - name: Install project dependencies
-      run: npm ci
-    - name: Lint and typecheck
-      run: npm run lint
     - name: Сheck if the repository is private
       if: ${{github.event.repository.private}}
       run: exit 1
@@ -41,6 +37,12 @@ jobs:
     - name: Run tests (sprint_2)
       if: ${{github.head_ref >= 'sprint_2'}}
       run: bats --formatter pretty /tmp/tests-middle-frontend/tests/sprint_2.bats
+
+    # The sprint 2 style-extension check also scans node_modules.
+    - name: Install project dependencies
+      run: npm ci
+    - name: Lint and typecheck
+      run: npm run lint
 
     - name: Run tests (sprint_3)
       if: ${{github.head_ref >= 'sprint_3'}}
