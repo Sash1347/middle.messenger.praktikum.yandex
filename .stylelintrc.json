@@ -1,5 +1,6 @@
 {
   "extends": "stylelint-config-standard-scss",
+  "ignoreFiles": ["dist/**", "dist-ssr/**", "node_modules/**"],
   "rules": {
     "selector-class-pattern": null
   }

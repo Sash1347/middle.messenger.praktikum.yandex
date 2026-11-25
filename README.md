@@ -91,3 +91,6 @@ npm run lint       # ESLint + Stylelint + TypeScript
 npm run typecheck  # tsc --noEmit
 npm run test:run   # однократный запуск тестов Vitest
 ```
+
+При установке зависимостей Husky настраивает pre-commit hook, который запускает
+`npm run lint` перед коммитом.
