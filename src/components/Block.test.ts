@@ -1,7 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import Block, { BlockOwnProps } from './Block';
+import Block, { type BlockOwnProps } from './Block';
 
-class TestBlock extends Block<BlockOwnProps> {
+interface TestBlockProps extends BlockOwnProps {
+  message?: string;
+}
+
+class TestBlock extends Block<TestBlockProps> {
   protected template = '<div class="test">{{ message }}</div>';
 }
 
@@ -21,7 +25,7 @@ describe('Block компонент', () => {
     });
 
     it('использует props при рендеринге', () => {
-      const block = new TestBlock({ message: 'Hello World' } as BlockOwnProps);
+      const block = new TestBlock({ message: 'Hello World' });
       const element = block.element();
 
       expect(element?.textContent).toBe('Hello World');
@@ -62,10 +66,10 @@ describe('Block компонент', () => {
 
   describe('setProps обновление', () => {
     it('обновляет props и перерендирует', () => {
-      const block = new TestBlock({ message: 'Initial' } as BlockOwnProps);
+      const block = new TestBlock({ message: 'Initial' });
       const element1 = block.element();
 
-      block.setProps({ message: 'Updated' } as Partial<BlockOwnProps>);
+      block.setProps({ message: 'Updated' });
       const element2 = block.element();
 
       expect(element2?.textContent).toBe('Updated');
@@ -73,10 +77,10 @@ describe('Block компонент', () => {
     });
 
     it('сохраняет остальные props при частичном обновлении', () => {
-      const initialProps: BlockOwnProps = { message: 'Hello' } as BlockOwnProps;
+      const initialProps: TestBlockProps = { message: 'Hello' };
       const block = new TestBlock(initialProps);
 
-      block.setProps({ message: 'World' } as Partial<BlockOwnProps>);
+      block.setProps({ message: 'World' });
 
       expect(block['props'].message).toBe('World');
     });
@@ -232,7 +236,7 @@ describe('Block компонент', () => {
         __children: [
           {
             component: child,
-            embed: () => {},
+            embed: vi.fn(),
           },
         ],
       } as BlockOwnProps);

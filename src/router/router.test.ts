@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { navigate, initRouter } from './router';
+import { navigate } from './router';
 
 vi.mock('../utils/auth', () => ({
   authService: {

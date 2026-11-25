@@ -11,8 +11,19 @@ import {
   ResponseParseError,
 } from './http';
 
+interface MockRequest {
+  withCredentials: boolean;
+  status: number;
+  responseText: string;
+  onload: ((this: MockRequest) => void) | null;
+  onerror: ((this: MockRequest) => void) | null;
+  open: ReturnType<typeof vi.fn>;
+  setRequestHeader: ReturnType<typeof vi.fn>;
+  send: ReturnType<typeof vi.fn>;
+}
+
 describe('HTTPClient', () => {
-  let xhrInstance: Partial<XMLHttpRequest>;
+  let xhrInstance: MockRequest;
 
   beforeEach(() => {
     xhrInstance = {
@@ -21,14 +32,16 @@ describe('HTTPClient', () => {
       responseText: '',
       onload: null,
       onerror: null,
-      open: vi.fn(function() {} as any),
-      setRequestHeader: vi.fn(function() {} as any),
-      send: vi.fn(function() {} as any),
+      open: vi.fn(),
+      setRequestHeader: vi.fn(),
+      send: vi.fn(),
     };
 
-    const XMLHttpRequestMock = vi.fn(function() {
-      return xhrInstance;
-    } as any);
+    class XMLHttpRequestMock {
+      constructor() {
+        return xhrInstance;
+      }
+    }
 
     vi.stubGlobal('XMLHttpRequest', XMLHttpRequestMock);
   });
@@ -43,7 +56,7 @@ describe('HTTPClient', () => {
       const client = new HTTPClient();
       const promise = client.get('/users');
 
-      const xhr = xhrInstance as unknown as XMLHttpRequest;
+      const xhr = xhrInstance;
       xhr.onload?.call(xhr);
 
       await promise;
@@ -56,7 +69,7 @@ describe('HTTPClient', () => {
       const client = new HTTPClient();
       const promise = client.get('/users', { id: '123', name: 'John' });
 
-      const xhr = xhrInstance as unknown as XMLHttpRequest;
+      const xhr = xhrInstance;
       xhr.onload?.call(xhr);
 
       await promise;
@@ -73,7 +86,7 @@ describe('HTTPClient', () => {
 
       const promise = client.get('/users');
 
-      const xhr = xhrInstance as unknown as XMLHttpRequest;
+      const xhr = xhrInstance;
       xhr.responseText = JSON.stringify({ response: mockData });
       xhr.status = 200;
       xhr.onload?.call(xhr);
@@ -91,7 +104,7 @@ describe('HTTPClient', () => {
 
       const promise = client.post('/users', data);
 
-      const xhr = xhrInstance as unknown as XMLHttpRequest;
+      const xhr = xhrInstance;
       xhr.onload?.call(xhr);
 
       await promise;
@@ -108,7 +121,7 @@ describe('HTTPClient', () => {
 
       const promise = client.post('/upload', formData);
 
-      const xhr = xhrInstance as unknown as XMLHttpRequest;
+      const xhr = xhrInstance;
       xhr.onload?.call(xhr);
 
       await promise;
@@ -123,7 +136,7 @@ describe('HTTPClient', () => {
 
       const promise = client.post('/users', {});
 
-      const xhr = xhrInstance as unknown as XMLHttpRequest;
+      const xhr = xhrInstance;
       xhr.responseText = JSON.stringify({ response: mockData });
       xhr.status = 201;
       xhr.onload?.call(xhr);
@@ -141,7 +154,7 @@ describe('HTTPClient', () => {
 
       const promise = client.put('/users/1', data);
 
-      const xhr = xhrInstance as unknown as XMLHttpRequest;
+      const xhr = xhrInstance;
       xhr.onload?.call(xhr);
 
       await promise;
@@ -158,7 +171,7 @@ describe('HTTPClient', () => {
 
       const promise = client.delete('/users', data);
 
-      const xhr = xhrInstance as unknown as XMLHttpRequest;
+      const xhr = xhrInstance;
       xhr.onload?.call(xhr);
 
       await promise;
@@ -174,7 +187,7 @@ describe('HTTPClient', () => {
 
       const promise = client.get('/users');
 
-      const xhr = xhrInstance as unknown as XMLHttpRequest;
+      const xhr = xhrInstance;
       xhr.status = 400;
       xhr.responseText = JSON.stringify({ reason: 'Invalid request' });
       xhr.onload?.call(xhr);
@@ -188,7 +201,7 @@ describe('HTTPClient', () => {
 
       const promise = client.get('/users');
 
-      const xhr = xhrInstance as unknown as XMLHttpRequest;
+      const xhr = xhrInstance;
       xhr.status = 401;
       xhr.responseText = JSON.stringify({ reason: 'Unauthorized' });
       xhr.onload?.call(xhr);
@@ -201,7 +214,7 @@ describe('HTTPClient', () => {
 
       const promise = client.get('/users');
 
-      const xhr = xhrInstance as unknown as XMLHttpRequest;
+      const xhr = xhrInstance;
       xhr.status = 403;
       xhr.responseText = JSON.stringify({ reason: 'Forbidden' });
       xhr.onload?.call(xhr);
@@ -214,7 +227,7 @@ describe('HTTPClient', () => {
 
       const promise = client.get('/users');
 
-      const xhr = xhrInstance as unknown as XMLHttpRequest;
+      const xhr = xhrInstance;
       xhr.status = 404;
       xhr.responseText = JSON.stringify({ reason: 'Not found' });
       xhr.onload?.call(xhr);
@@ -227,7 +240,7 @@ describe('HTTPClient', () => {
 
       const promise = client.get('/users');
 
-      const xhr = xhrInstance as unknown as XMLHttpRequest;
+      const xhr = xhrInstance;
       xhr.status = 409;
       xhr.responseText = JSON.stringify({ reason: 'Conflict' });
       xhr.onload?.call(xhr);
@@ -240,7 +253,7 @@ describe('HTTPClient', () => {
 
       const promise = client.get('/users');
 
-      const xhr = xhrInstance as unknown as XMLHttpRequest;
+      const xhr = xhrInstance;
       xhr.status = 500;
       xhr.responseText = JSON.stringify({ reason: 'Server error' });
       xhr.onload?.call(xhr);
@@ -253,7 +266,7 @@ describe('HTTPClient', () => {
 
       const promise = client.get('/users');
 
-      const xhr = xhrInstance as unknown as XMLHttpRequest;
+      const xhr = xhrInstance;
       xhr.status = 400;
       xhr.responseText = 'invalid json {';
       xhr.onload?.call(xhr);
@@ -266,7 +279,7 @@ describe('HTTPClient', () => {
 
       const promise = client.get('/users');
 
-      const xhr = xhrInstance as unknown as XMLHttpRequest;
+      const xhr = xhrInstance;
       xhr.onerror?.call(xhr);
 
       await expect(promise).rejects.toThrow(NetworkError);
@@ -277,7 +290,7 @@ describe('HTTPClient', () => {
 
       const promise = client.get('/users');
 
-      const xhr = xhrInstance as unknown as XMLHttpRequest;
+      const xhr = xhrInstance;
       xhr.status = 200;
       xhr.responseText = 'invalid json {';
       xhr.onload?.call(xhr);
@@ -293,7 +306,7 @@ describe('HTTPClient', () => {
 
       const promise = client.get('/users', undefined, { headers });
 
-      const xhr = xhrInstance as unknown as XMLHttpRequest;
+      const xhr = xhrInstance;
       xhr.onload?.call(xhr);
 
       await promise;
@@ -308,7 +321,7 @@ describe('HTTPClient', () => {
 
       const promise = client.get('/users');
 
-      const xhr = xhrInstance as unknown as XMLHttpRequest;
+      const xhr = xhrInstance;
       xhr.status = 200;
       xhr.responseText = 'OK';
       xhr.onload?.call(xhr);
@@ -323,7 +336,7 @@ describe('HTTPClient', () => {
 
       const promise = client.get('/users');
 
-      const xhr = xhrInstance as unknown as XMLHttpRequest;
+      const xhr = xhrInstance;
       xhr.status = 200;
       xhr.responseText = '';
       xhr.onload?.call(xhr);
@@ -340,7 +353,7 @@ describe('HTTPClient', () => {
 
       const promise = client.get('/users');
 
-      const xhr = xhrInstance as unknown as XMLHttpRequest;
+      const xhr = xhrInstance;
       xhr.onload?.call(xhr);
 
       await promise;
@@ -355,7 +368,7 @@ describe('HTTPClient', () => {
 
       const promise = client.get('/users');
 
-      const xhr = xhrInstance as unknown as XMLHttpRequest;
+      const xhr = xhrInstance;
       xhr.onload?.call(xhr);
 
       await promise;

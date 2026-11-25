@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { chatService, ChatData, ChatUser } from './chat';
+import { chatService, type ChatData, type ChatUser } from './chat';
 
 vi.mock('../utils/http', () => ({
   httpClient: {
@@ -10,7 +10,7 @@ vi.mock('../utils/http', () => ({
   },
 }));
 
-const mockHttpClient = vi.mocked(await import('../utils/http')).httpClient;
+const mockHttpClient = vi.mocked((await import('../utils/http')).httpClient, { deep: true });
 
 function createMockChat(overrides: Partial<ChatData> = {}): ChatData {
   return {

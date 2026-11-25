@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { authService, UserData } from './auth';
+import { authService, type UserData } from './auth';
 
 vi.mock('./http', () => ({
   httpClient: {
@@ -16,7 +16,7 @@ vi.mock('./http', () => ({
   },
 }));
 
-const mockHttpClient = vi.mocked(await import('./http')).httpClient;
+const mockHttpClient = vi.mocked((await import('./http')).httpClient, { deep: true });
 
 function createMockUser(overrides: Partial<UserData> = {}): UserData {
   return {
