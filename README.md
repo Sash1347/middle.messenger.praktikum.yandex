@@ -64,6 +64,7 @@ WebSocket, загружает последние 20 сообщений и пок
 - **Vite** — сборка и dev-сервер
 - **Netlify** — хостинг
 - **ESLint**, **Stylelint**, **tsc --noEmit** — качество кода и проверка типов
+- **Vitest** — тесты, расположенные рядом с проверяемыми модулями
 
 ## Страницы
 
@@ -88,4 +89,5 @@ npm run build      # проверка типов и сборка в dist
 npm run preview    # запуск уже собранной версии на порте 3000
 npm run lint       # ESLint + Stylelint + TypeScript
 npm run typecheck  # tsc --noEmit
+npm run test:run   # однократный запуск тестов Vitest
 ```

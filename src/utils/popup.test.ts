@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, beforeEach, afterEach, vi } from 'vitest';
 import {
   showSuccessPopup,
   showErrorPopup,
@@ -7,6 +7,33 @@ import {
 } from './popup';
 
 describe('Popup утилиты', () => {
+  const originalShowModal = Object.getOwnPropertyDescriptor(HTMLDialogElement.prototype, 'showModal');
+  const originalClose = Object.getOwnPropertyDescriptor(HTMLDialogElement.prototype, 'close');
+
+  beforeAll(() => {
+    Object.defineProperty(HTMLDialogElement.prototype, 'showModal', {
+      configurable: true,
+      value(this: HTMLDialogElement) { this.open = true; },
+    });
+    Object.defineProperty(HTMLDialogElement.prototype, 'close', {
+      configurable: true,
+      value(this: HTMLDialogElement) { this.open = false; },
+    });
+  });
+
+  afterAll(() => {
+    if (originalShowModal) {
+      Object.defineProperty(HTMLDialogElement.prototype, 'showModal', originalShowModal);
+    } else {
+      Reflect.deleteProperty(HTMLDialogElement.prototype, 'showModal');
+    }
+    if (originalClose) {
+      Object.defineProperty(HTMLDialogElement.prototype, 'close', originalClose);
+    } else {
+      Reflect.deleteProperty(HTMLDialogElement.prototype, 'close');
+    }
+  });
+
   beforeEach(() => {
     document.body.innerHTML = '';
     vi.clearAllTimers();
@@ -14,6 +41,8 @@ describe('Popup утилиты', () => {
   });
 
   afterEach(() => {
+    document.querySelectorAll<HTMLButtonElement>('.popup-dialog__button--secondary')
+      .forEach((button) => button.click());
     document.body.innerHTML = '';
     vi.useRealTimers();
   });
