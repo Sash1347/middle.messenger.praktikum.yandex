@@ -16,6 +16,17 @@
         position: relative;
     }
 
+    &__conversation[hidden] {
+        display: none;
+    }
+
+    &__connection {
+        margin: 0;
+        padding: 4px 12px;
+        color: #657477;
+        font-size: 13px;
+    }
+
     &__profile {
         display: flex;
         justify-content: space-between;

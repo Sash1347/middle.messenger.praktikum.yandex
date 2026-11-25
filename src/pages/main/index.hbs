@@ -13,8 +13,9 @@
            <div class="chat-layout__chats-list" aria-live="polite">Loading chats...</div>
         </div>
    </aside>
-   <section class="chat-layout__conversation">
+   <section class="chat-layout__conversation" hidden>
         {{{DialogHeader}}}
+        <p class="chat-layout__connection" role="status" aria-live="polite"></p>
         <div class="chat-layout__dialog">
            {{{Dialog}}}
         </div>

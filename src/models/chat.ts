@@ -1,6 +1,7 @@
 export interface ChatMessage {
   text: string;
   direction: 'outgoing' | 'incoming';
+  id?: string;
 }
 
 const STORAGE_PREFIX = 'chat_messages_';
@@ -51,11 +52,20 @@ class ChatModel {
     this.messages = [];
   }
 
-  addMessage(text: string): void {
-    if (!/\S/.test(text)) throw new Error('Message must not be empty');
+  setMessages(messages: ChatMessage[]): void {
     if (this.activeChatId === null) throw new Error('Select a chat before sending a message');
-    this.messages = [...this.messages, { text, direction: 'outgoing' }];
+    const seen = new Set<string>();
+    this.messages = messages.filter((message) => {
+      if (message.id === undefined) return true;
+      if (seen.has(message.id)) return false;
+      seen.add(message.id);
+      return true;
+    });
     sessionStorage.setItem(this.getStorageKey(this.activeChatId), JSON.stringify(this.messages));
+  }
+
+  addMessage(message: ChatMessage): void {
+    this.setMessages([...this.messages, message]);
   }
 
   clearChat(chatId: number): void {

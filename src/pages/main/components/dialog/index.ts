@@ -5,6 +5,8 @@ import type { FormProps } from '../../../../components/form';
 import '../../../../components/form';
 import { chatModel, type ChatMessage } from '../../../../models/chat';
 import { dialogFormSubmit } from './helper';
+import { websocketService } from '../../../../services/websocket';
+import { showErrorPopup } from '../../../../utils/popup';
 import './components/message';
 import './index.scss';
 
@@ -25,8 +27,14 @@ export default class Dialog extends Block<DialogTemplateProps> {
         fields: [{ type: 'text', id: 'message', name: 'message', placeholder: 'Type a message' }],
         button: { text: 'Send' },
         onSubmit: (data) => {
-          dialogFormSubmit(data);
-          this.updateMessages();
+          try {
+            dialogFormSubmit(data);
+            const form = this.refs.input;
+            if (form instanceof HTMLFormElement) form.reset();
+          } catch (error) {
+            const message = error instanceof Error ? error.message : 'Unknown error';
+            void showErrorPopup(`Could not send message: ${message}`);
+          }
         },
       },
     });
@@ -34,17 +42,39 @@ export default class Dialog extends Block<DialogTemplateProps> {
 
   protected componentDidMount(): void {
     this.element()?.addEventListener('chat:selected', this.handleChatSelected);
+    this.element()?.addEventListener('chat:messages', this.handleMessages);
+    this.element()?.addEventListener('chat:status', this.updateSendState);
+    this.updateSendState();
   }
 
   protected componentWillUnmount(): void {
     this.element()?.removeEventListener('chat:selected', this.handleChatSelected);
+    this.element()?.removeEventListener('chat:messages', this.handleMessages);
+    this.element()?.removeEventListener('chat:status', this.updateSendState);
   }
 
   private handleChatSelected = (): void => {
-    this.updateMessages();
+    this.updateMessages(true);
   };
 
-  private updateMessages(): void {
+  private handleMessages = (): void => {
+    this.updateMessages(false);
+  };
+
+  private updateSendState = (): void => {
+    const form = this.refs.input;
+    if (!(form instanceof HTMLFormElement)) return;
+    const button = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+    if (button) button.disabled = !websocketService.isConnected();
+  };
+
+  private updateMessages(reset: boolean): void {
+    const oldForm = this.refs.input;
+    const oldInput = oldForm?.querySelector<HTMLInputElement>('input[name="message"]');
+    const value = reset ? '' : oldInput?.value ?? '';
+    const focused = document.activeElement === oldInput;
+    const selectionStart = oldInput?.selectionStart ?? null;
+    const selectionEnd = oldInput?.selectionEnd ?? null;
     this.setProps({
       messages: chatModel.getMessages(),
     });
@@ -54,8 +84,16 @@ export default class Dialog extends Block<DialogTemplateProps> {
       throw new Error('Dialog elements not found');
     }
 
-    form.reset();
-    form.querySelector('input')?.focus();
+    const input = form.querySelector<HTMLInputElement>('input[name="message"]');
+    if (input) {
+      input.value = value;
+      if (reset || focused) {
+        input.focus();
+        if (!reset && selectionStart !== null && selectionEnd !== null) {
+          input.setSelectionRange(selectionStart, selectionEnd);
+        }
+      }
+    }
     messages.scrollTop = messages.scrollHeight;
   }
 }

@@ -8,9 +8,10 @@ import './components/dialog/components/dialog-header';
 import { authService } from '../../utils/auth';
 import { navigate } from '../../router/router';
 import { setButtonLoading } from '../../utils/buttonLoader';
-import { chatModel } from '../../models/chat';
+import { chatModel, type ChatMessage } from '../../models/chat';
 import ChatCard from './components/chat-card';
 import { chatService, type ChatData } from '../../services/chat';
+import { websocketService, type ServerMessage } from '../../services/websocket';
 import DefaultAvatar from '../../assets/images/avatar.png';
 import {
     showConfirmPopup,
@@ -22,9 +23,12 @@ import {
 import './index.scss';
 
 export default function RenderMainContent(renderToHtml: RenderContent) {
-    renderPage(template, {}, renderToHtml);
+    chatModel.deselectChat();
+    const destroyPage = renderPage(template, {}, renderToHtml);
 
     const chatList = document.querySelector<HTMLElement>('.chat-layout__chats-list');
+    const conversation = document.querySelector<HTMLElement>('.chat-layout__conversation');
+    const connectionStatus = document.querySelector<HTMLElement>('.chat-layout__connection');
     const newChatButton = document.querySelector<HTMLButtonElement>('.chat-layout__new-chat');
     const addUserButton = document.querySelector<HTMLButtonElement>('.dialog-header__add-user');
     const removeUserButton = document.querySelector<HTMLButtonElement>('.dialog-header__remove-user');
@@ -36,6 +40,49 @@ export default function RenderMainContent(renderToHtml: RenderContent) {
     let chats: ChatData[] = [];
     let selectedChat: ChatData | null = null;
     let chatCards: ChatCard[] = [];
+    let active = true;
+
+    const notifyDialog = (event: string) => {
+        document.querySelector('.dialog')?.dispatchEvent(new Event(event));
+    };
+
+    const setConnectionStatus = (message: string) => {
+        if (connectionStatus) connectionStatus.textContent = message;
+        notifyDialog('chat:status');
+    };
+
+    const connectChat = (chat: ChatData) => {
+        websocketService.disconnect();
+        const user = authService.getAuthUser();
+        if (!user) {
+            setConnectionStatus('Could not identify the current user. Sign in again.');
+            return;
+        }
+
+        const liveMessages: ChatMessage[] = [];
+        let awaitingHistory = true;
+        const toChatMessage = (message: ServerMessage): ChatMessage => ({
+            text: message.content,
+            direction: String(message.user_id) === String(user.id) ? 'outgoing' : 'incoming',
+            ...(message.id !== undefined ? { id: String(message.id) } : {}),
+        });
+
+        void websocketService.connect(chat.id, user.id, {
+            onState: (_state, message) => setConnectionStatus(message),
+            onMessages: (messages, history) => {
+                const converted = messages.map(toChatMessage);
+                if (history) {
+                    chatModel.setMessages([...converted.reverse(), ...liveMessages]);
+                    awaitingHistory = false;
+                    liveMessages.length = 0;
+                } else {
+                    if (awaitingHistory) liveMessages.push(...converted);
+                    converted.forEach((message) => chatModel.addMessage(message));
+                }
+                notifyDialog('chat:messages');
+            },
+        });
+    };
 
     const renderChatCards = () => {
         if (!chatList) return;
@@ -87,11 +134,13 @@ export default function RenderMainContent(renderToHtml: RenderContent) {
     async function selectChat(chat: ChatData): Promise<void> {
         selectedChat = chat;
         chatModel.selectChat(chat.id);
+        if (conversation) conversation.hidden = false;
         if (chatTitle) chatTitle.textContent = chat.title;
         if (chatUsers) chatUsers.textContent = 'Loading members...';
         setChatActionsEnabled(true);
         renderChatCards();
-        document.querySelector('.dialog')?.dispatchEvent(new Event('chat:selected'));
+        notifyDialog('chat:selected');
+        connectChat(chat);
         await refreshChatUsers(chat);
     }
 
@@ -101,21 +150,24 @@ export default function RenderMainContent(renderToHtml: RenderContent) {
 
         try {
             chats = await chatService.getChats();
+            if (!active) return;
             selectedChat = chats.find((chat) => chat.id === preferredChatId)
                 ?? chats.find((chat) => chat.id === selectedChat?.id)
-                ?? chats[0]
                 ?? null;
             renderChatCards();
 
             if (selectedChat) {
                 await selectChat(selectedChat);
             } else {
+                websocketService.disconnect();
                 chatModel.deselectChat();
+                if (conversation) conversation.hidden = true;
                 if (chatTitle) chatTitle.textContent = 'Select a chat';
                 if (chatUsers) chatUsers.textContent = '';
-                document.querySelector('.dialog')?.dispatchEvent(new Event('chat:selected'));
+                notifyDialog('chat:selected');
             }
         } catch (error) {
+            if (!active) return;
             if (chatList) chatList.textContent = 'Could not load chats.';
             await showErrorPopup(`Could not load chats: ${getErrorMessage(error)}`);
         }
@@ -172,8 +224,12 @@ export default function RenderMainContent(renderToHtml: RenderContent) {
 
         try {
             await chatService.deleteChat(selectedChat.id);
+            if (!active) return;
+            websocketService.disconnect();
             chatModel.clearChat(selectedChat.id);
             selectedChat = null;
+            chatModel.deselectChat();
+            if (conversation) conversation.hidden = true;
             await loadChats();
             await showSuccessPopup('Chat deleted.');
         } catch (error) {
@@ -188,6 +244,8 @@ export default function RenderMainContent(renderToHtml: RenderContent) {
         try {
             if (button) setButtonLoading(button, true);
             await authService.logout();
+            if (!active) return;
+            websocketService.disconnect();
             chatModel.clear();
             navigate('/');
         } catch (error) {
@@ -200,6 +258,13 @@ export default function RenderMainContent(renderToHtml: RenderContent) {
     });
 
     void loadChats();
+
+    return () => {
+        active = false;
+        websocketService.disconnect();
+        chatCards.forEach((card) => card.destroy());
+        destroyPage();
+    };
 }
 
 function getErrorMessage(error: unknown): string {

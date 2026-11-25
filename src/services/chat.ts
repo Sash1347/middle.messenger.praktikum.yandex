@@ -25,6 +25,10 @@ class ChatService {
     return httpClient.get<ChatData[]>('/chats');
   }
 
+  getMessagesToken(chatId: number): Promise<{ token: string }> {
+    return httpClient.post<{ token: string }>(`/chats/token/${chatId}`);
+  }
+
   createChat(title: string): Promise<CreateChatResponse> {
     return httpClient.post<CreateChatResponse>('/chats', { title });
   }

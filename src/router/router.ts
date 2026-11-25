@@ -12,7 +12,7 @@ const ROOT_QUERY = '#app';
 
 interface RouteDefinition {
   pathname: string;
-  pageRenderer: (renderToHtml: RenderContent) => void;
+  pageRenderer: (renderToHtml: RenderContent) => void | (() => void);
   requireAuth: boolean;
 }
 
@@ -29,19 +29,23 @@ const routes: RouteDefinition[] = [
 
 const GUEST_PATHS = new Set(['/', '/sign-up']);
 let navigationId = 0;
+let cleanupPage: (() => void) | undefined;
 
 function renderPage(pageRenderer: RouteDefinition['pageRenderer']): void {
   const root = document.querySelector(ROOT_QUERY);
   if (!root) throw new Error(`Root element ${ROOT_QUERY} not found`);
 
+  cleanupPage?.();
+  cleanupPage = undefined;
   root.innerHTML = '';
-  pageRenderer((content) => {
+  const cleanup = pageRenderer((content) => {
     if (typeof content === 'string') {
       root.innerHTML = content;
     } else {
       root.replaceChildren(content);
     }
   });
+  if (typeof cleanup === 'function') cleanupPage = cleanup;
 }
 
 export function navigate(path: string, queryParams?: Record<string, string>): void {
