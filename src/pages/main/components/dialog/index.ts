@@ -27,10 +27,15 @@ export default class Dialog extends Block<DialogTemplateProps> {
         fields: [{ type: 'text', id: 'message', name: 'message', placeholder: 'Type a message' }],
         button: { text: 'Send' },
         onSubmit: (data) => {
+          if (typeof data.message !== 'string' || !/\S/.test(data.message)) {
+            console.warn('Cannot send an empty message.');
+            return;
+          }
           try {
             dialogFormSubmit(data);
             const form = this.refs.input;
             if (form instanceof HTMLFormElement) form.reset();
+            this.updateSendState();
           } catch (error) {
             const message = error instanceof Error ? error.message : 'Unknown error';
             void showErrorPopup(`Could not send message: ${message}`);
@@ -44,6 +49,7 @@ export default class Dialog extends Block<DialogTemplateProps> {
     this.element()?.addEventListener('chat:selected', this.handleChatSelected);
     this.element()?.addEventListener('chat:messages', this.handleMessages);
     this.element()?.addEventListener('chat:status', this.updateSendState);
+    this.element()?.addEventListener('input', this.updateSendState);
     this.updateSendState();
   }
 
@@ -51,6 +57,7 @@ export default class Dialog extends Block<DialogTemplateProps> {
     this.element()?.removeEventListener('chat:selected', this.handleChatSelected);
     this.element()?.removeEventListener('chat:messages', this.handleMessages);
     this.element()?.removeEventListener('chat:status', this.updateSendState);
+    this.element()?.removeEventListener('input', this.updateSendState);
   }
 
   private handleChatSelected = (): void => {
@@ -65,7 +72,8 @@ export default class Dialog extends Block<DialogTemplateProps> {
     const form = this.refs.input;
     if (!(form instanceof HTMLFormElement)) return;
     const button = form.querySelector<HTMLButtonElement>('button[type="submit"]');
-    if (button) button.disabled = !websocketService.isConnected();
+    const input = form.querySelector<HTMLInputElement>('input[name="message"]');
+    if (button) button.disabled = !websocketService.isConnected() || !input || !/\S/.test(input.value);
   };
 
   private updateMessages(reset: boolean): void {
@@ -93,6 +101,7 @@ export default class Dialog extends Block<DialogTemplateProps> {
           input.setSelectionRange(selectionStart, selectionEnd);
         }
       }
+      this.updateSendState();
     }
     messages.scrollTop = messages.scrollHeight;
   }

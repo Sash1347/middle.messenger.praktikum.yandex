@@ -156,6 +156,50 @@
         font-size: 12px;
     }
 
+    &__file-label {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-top: 12px;
+        font-size: 13px;
+    }
+
+    &__members {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        max-height: min(50vh, 360px);
+        overflow-y: auto;
+    }
+
+    &__member {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border-radius: 6px;
+        overflow-wrap: anywhere;
+    }
+
+    &__member-avatar {
+        flex: 0 0 36px;
+        width: 36px;
+        height: 36px;
+        border: 1px solid #b9c6c8;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    &__member-details {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+    }
+
+    &__member-remove {
+        flex-shrink: 0;
+        margin-left: auto;
+    }
+
     &__actions {
         display: flex;
         justify-content: flex-end;

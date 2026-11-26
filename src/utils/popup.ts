@@ -86,6 +86,163 @@ function createDialog(title: string, message: string): HTMLDialogElement {
   return dialog;
 }
 
+export const isSupportedChatImage = (file: File): boolean =>
+  !file.type || ["image/jpeg", "image/png", "image/gif", "image/webp"].includes(file.type);
+
+export function showCreateChatPopup(): Promise<{ title: string; avatar: File | null } | null> {
+  return new Promise((resolve) => {
+    const dialog = createDialog("New chat", "Choose a name and optionally an image.");
+    const form = document.createElement("form");
+    form.noValidate = true;
+    const name = document.createElement("input");
+    name.className = "popup-dialog__input";
+    name.type = "text";
+    name.setAttribute("aria-label", "Chat name");
+    const label = document.createElement("label");
+    label.className = "popup-dialog__file-label";
+    label.textContent = "Chat image (optional)";
+    const file = document.createElement("input");
+    file.type = "file";
+    file.accept = "image/jpeg,image/png,image/gif,image/webp";
+    label.append(file);
+    const validation = document.createElement("span");
+    validation.className = "popup-dialog__validation";
+    validation.setAttribute("aria-live", "polite");
+    const actions = document.createElement("div");
+    actions.className = "popup-dialog__actions";
+    const cancel = document.createElement("button");
+    cancel.type = "button";
+    cancel.className = "popup-dialog__button popup-dialog__button--secondary";
+    cancel.textContent = "Cancel";
+    const submit = document.createElement("button");
+    submit.type = "submit";
+    submit.className = "popup-dialog__button";
+    submit.textContent = "Create";
+    let settled = false;
+    const finish = (result: { title: string; avatar: File | null } | null) => {
+      if (settled) return;
+      settled = true;
+      if (dialog.open) dialog.close();
+      dialog.remove();
+      resolve(result);
+    };
+    cancel.addEventListener("click", () => finish(null));
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const title = name.value.trim();
+      const avatar = file.files?.[0] ?? null;
+      if (!title) {
+        validation.textContent = "Enter a chat name.";
+        name.focus();
+      } else if (avatar && !isSupportedChatImage(avatar)) {
+        validation.textContent = "Choose a JPEG, PNG, GIF or WebP image.";
+        file.focus();
+      } else {
+        finish({ title, avatar });
+      }
+    });
+    dialog.addEventListener("cancel", (event) => {
+      event.preventDefault();
+      finish(null);
+    });
+    dialog.addEventListener("click", (event) => {
+      if (event.target === dialog) finish(null);
+    });
+    actions.append(cancel, submit);
+    form.append(name, label, validation, actions);
+    dialog.append(form);
+    document.body.append(dialog);
+    dialog.showModal();
+    name.focus();
+  });
+}
+
+export interface PopupMember {
+  id: number;
+  name: string;
+  login: string;
+  avatar: string | null;
+}
+
+export function showMembersPopup(
+  members: PopupMember[],
+  currentUserId: number,
+): Promise<number | null> {
+  return new Promise((resolve) => {
+    const dialog = createDialog("Chat members", "Members of this chat.");
+    let settled = false;
+    const finish = (id: number | null) => {
+      if (settled) return;
+      settled = true;
+      if (dialog.open) dialog.close();
+      dialog.remove();
+      resolve(id);
+    };
+
+    const list = document.createElement("div");
+    list.className = "popup-dialog__members";
+    if (members.length === 0) list.textContent = "No members.";
+    members.forEach((member) => {
+      const row = document.createElement("div");
+      row.className = "popup-dialog__member";
+      const emptyAvatar = () => {
+        const placeholder = document.createElement("span");
+        placeholder.className = "popup-dialog__member-avatar";
+        placeholder.setAttribute("aria-hidden", "true");
+        return placeholder;
+      };
+      let avatar: HTMLElement = emptyAvatar();
+      if (member.avatar) {
+        const image = document.createElement("img");
+        image.className = "popup-dialog__member-avatar";
+        image.alt = "";
+        image.crossOrigin = "use-credentials";
+        image.addEventListener("error", () => image.replaceWith(emptyAvatar()), { once: true });
+        image.src = member.avatar;
+        avatar = image;
+      }
+      const details = document.createElement("span");
+      details.className = "popup-dialog__member-details";
+      const name = document.createElement("span");
+      name.textContent = member.name;
+      const login = document.createElement("small");
+      login.textContent = `@${member.login}`;
+      details.append(name, login);
+      row.append(avatar, details);
+      if (member.id !== currentUserId) {
+        const removeButton = document.createElement("button");
+        removeButton.className = "popup-dialog__button popup-dialog__button--danger popup-dialog__member-remove";
+        removeButton.type = "button";
+        removeButton.textContent = "Remove";
+        removeButton.setAttribute("aria-label", `Remove ${member.name} (@${member.login})`);
+        removeButton.addEventListener("click", () => finish(member.id));
+        row.append(removeButton);
+      }
+      list.append(row);
+    });
+
+    const actions = document.createElement("div");
+    actions.className = "popup-dialog__actions";
+    const cancelButton = document.createElement("button");
+    cancelButton.className = "popup-dialog__button popup-dialog__button--secondary";
+    cancelButton.type = "button";
+    cancelButton.textContent = "Close";
+    cancelButton.addEventListener("click", () => finish(null));
+    actions.append(cancelButton);
+    dialog.addEventListener("cancel", (event) => {
+      event.preventDefault();
+      finish(null);
+    });
+    dialog.addEventListener("click", (event) => {
+      if (event.target === dialog) finish(null);
+    });
+    dialog.append(list, actions);
+    document.body.append(dialog);
+    dialog.showModal();
+    cancelButton.focus();
+  });
+}
+
 export function showPromptPopup(
   title: string,
   message: string,

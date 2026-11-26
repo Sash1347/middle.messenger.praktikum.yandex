@@ -90,6 +90,19 @@ describe('ChatService', () => {
       expect(result.id).toBe(123);
     });
 
+    it('uploads the chat image as multipart form data', async () => {
+      const file = new File(['image'], 'chat.png', { type: 'image/png' });
+      const updated = createMockChat({ avatar: '/chat.png' });
+      mockHttpClient.put.mockResolvedValueOnce(updated);
+      expect(await chatService.updateAvatar(42, file)).toEqual(updated);
+      const [path, data] = mockHttpClient.put.mock.calls[0];
+      expect(path).toBe('/chats/avatar');
+      expect(data).toBeInstanceOf(FormData);
+      if (!(data instanceof FormData)) throw new Error('Expected FormData');
+      expect(data.get('chatId')).toBe('42');
+      expect(data.get('avatar')).toBe(file);
+    });
+
     it('возвращает ID созданного чата', async () => {
       mockHttpClient.post.mockResolvedValue({ id: 999 });
 
@@ -156,7 +169,7 @@ describe('ChatService', () => {
 
       const result = await chatService.getChatUsers(123);
 
-      expect(mockHttpClient.get).toHaveBeenCalledWith('/chats/123/users');
+      expect(mockHttpClient.get).toHaveBeenCalledWith('/chats/123/users', { offset: '0', limit: '20' });
       expect(result).toEqual(mockUsers);
     });
 
@@ -165,7 +178,7 @@ describe('ChatService', () => {
 
       await chatService.getChatUsers(456);
 
-      expect(mockHttpClient.get).toHaveBeenCalledWith('/chats/456/users');
+      expect(mockHttpClient.get).toHaveBeenCalledWith('/chats/456/users', { offset: '0', limit: '20' });
     });
 
     it('возвращает пустой массив если пользователей нет', async () => {
@@ -174,6 +187,14 @@ describe('ChatService', () => {
       const result = await chatService.getChatUsers(123);
 
       expect(result).toEqual([]);
+    });
+
+    it('загружает все страницы участников', async () => {
+      const firstPage = Array.from({ length: 20 }, (_, id) => createMockChatUser({ id }));
+      const lastPage = [createMockChatUser({ id: 20 })];
+      mockHttpClient.get.mockResolvedValueOnce(firstPage).mockResolvedValueOnce(lastPage);
+      expect(await chatService.getChatUsers(123)).toEqual([...firstPage, ...lastPage]);
+      expect(mockHttpClient.get).toHaveBeenLastCalledWith('/chats/123/users', { offset: '20', limit: '20' });
     });
 
     it('возвращает пользователей с корректной структурой', async () => {

@@ -6,7 +6,7 @@ import './index.scss';
 
 interface ChatCardProps extends BlockOwnProps {
     id: number;
-    avatar: string;
+    avatar: string | null;
     name: string;
     selected: boolean;
     onSelect: (id: number) => void;

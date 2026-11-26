@@ -33,12 +33,29 @@ class ChatService {
     return httpClient.post<CreateChatResponse>('/chats', { title });
   }
 
+  updateAvatar(chatId: number, avatar: File): Promise<ChatData> {
+    const data = new FormData();
+    data.append('chatId', String(chatId));
+    data.append('avatar', avatar);
+    return httpClient.put<ChatData>('/chats/avatar', data);
+  }
+
   deleteChat(chatId: number): Promise<void> {
     return httpClient.delete<void>('/chats', { chatId });
   }
 
-  getChatUsers(chatId: number): Promise<ChatUser[]> {
-    return httpClient.get<ChatUser[]>(`/chats/${chatId}/users`);
+  async getChatUsers(chatId: number): Promise<ChatUser[]> {
+    const users: ChatUser[] = [];
+    const limit = 20;
+    let page: ChatUser[];
+    do {
+      page = await httpClient.get<ChatUser[]>(`/chats/${chatId}/users`, {
+        offset: String(users.length),
+        limit: String(limit),
+      });
+      users.push(...page);
+    } while (page.length === limit);
+    return users;
   }
 
   addUsers(chatId: number, users: number[]): Promise<void> {

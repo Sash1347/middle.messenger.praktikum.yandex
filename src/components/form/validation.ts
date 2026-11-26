@@ -11,7 +11,6 @@ const patterns: Record<string, RegExp> = {
   new_password: passwordPattern,
   confirm_password: passwordPattern,
   phone: /^\+?\d{10,15}$/,
-  message: /\S/,
 };
 
 const nameError = 'Use Latin or Cyrillic letters and hyphens, starting with a capital letter. Spaces and digits are not allowed.';
@@ -27,7 +26,6 @@ const errorMessages: Record<string, string> = {
   new_password: passwordError,
   confirm_password: passwordError,
   phone: 'Enter 10-15 digits, optionally starting with +. Spaces, brackets and hyphens are not allowed.',
-  message: 'Enter a message containing at least one non-space character.',
 };
 
 export const getFieldError = (

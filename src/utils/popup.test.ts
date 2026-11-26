@@ -4,6 +4,8 @@ import {
   showErrorPopup,
   showPromptPopup,
   showConfirmPopup,
+  showMembersPopup,
+  showCreateChatPopup,
 } from './popup';
 
 describe('Popup утилиты', () => {
@@ -117,6 +119,36 @@ describe('Popup утилиты', () => {
       expect(document.querySelector('.popup-dialog__message')?.textContent).toBe('Please enter your name');
     });
 
+    describe('showCreateChatPopup', () => {
+      it('requires a title and allows creating without an image', async () => {
+        const result = showCreateChatPopup();
+        const form = document.querySelector<HTMLFormElement>('.popup-dialog form');
+        form?.requestSubmit();
+        expect(document.querySelector('.popup-dialog__validation')?.textContent).toBe('Enter a chat name.');
+        const name = document.querySelector<HTMLInputElement>('.popup-dialog input[type="text"]');
+        if (!name) throw new Error('Name input missing');
+        name.value = ' New chat ';
+        form?.requestSubmit();
+        expect(await result).toEqual({ title: 'New chat', avatar: null });
+      });
+
+      it('accepts an image and rejects unsupported files', async () => {
+        const result = showCreateChatPopup();
+        const name = document.querySelector<HTMLInputElement>('.popup-dialog input[type="text"]');
+        const fileInput = document.querySelector<HTMLInputElement>('.popup-dialog input[type="file"]');
+        const form = document.querySelector<HTMLFormElement>('.popup-dialog form');
+        if (!name || !fileInput || !form) throw new Error('Create form missing');
+        name.value = 'Test';
+        Object.defineProperty(fileInput, 'files', { configurable: true, value: [new File(['x'], 'bad.txt', { type: 'text/plain' })] });
+        form.requestSubmit();
+        expect(document.querySelector('.popup-dialog__validation')?.textContent).toContain('JPEG');
+        const file = new File(['x'], 'avatar.png', { type: 'image/png' });
+        Object.defineProperty(fileInput, 'files', { configurable: true, value: [file] });
+        form.requestSubmit();
+        expect(await result).toEqual({ title: 'Test', avatar: file });
+      });
+    });
+
     it('создаёт input поле', () => {
       showPromptPopup('Enter value', 'Test message');
 
@@ -168,6 +200,46 @@ describe('Popup утилиты', () => {
 
       expect(document.querySelector('.popup-dialog__title')?.textContent).toBe('Delete item?');
       expect(document.querySelector('.popup-dialog__message')?.textContent).toBe('This action cannot be undone');
+    });
+
+    describe('showMembersPopup', () => {
+      const members = [
+        { id: 4, name: '<Alice>', login: 'alice', avatar: '/alice.png' },
+        { id: 8, name: 'Bob', login: 'bob', avatar: '/bob.png' },
+      ];
+
+      it('shows names and avatars and removes a member from the list', async () => {
+        const result = showMembersPopup(members, 4);
+        expect(document.querySelectorAll('.popup-dialog__member')).toHaveLength(2);
+        expect(document.querySelector('.popup-dialog__member-details')?.textContent).toBe('<Alice>@alice');
+        expect(document.querySelector('.popup-dialog__member-details img')).toBeNull();
+        const avatar = document.querySelector<HTMLImageElement>('.popup-dialog__member-avatar');
+        expect(avatar?.getAttribute('src')).toBe('/alice.png');
+        expect(avatar?.crossOrigin).toBe('use-credentials');
+        expect(document.querySelectorAll<HTMLImageElement>('.popup-dialog__member-avatar')[1].getAttribute('src')).toBe('/bob.png');
+        avatar?.dispatchEvent(new Event('error'));
+        expect(document.querySelector('.popup-dialog__member-avatar')?.tagName).toBe('SPAN');
+        const buttons = document.querySelectorAll<HTMLButtonElement>('.popup-dialog__member-remove');
+        expect(document.querySelectorAll('.popup-dialog__member')[0].querySelector('.popup-dialog__member-remove')).toBeNull();
+        expect(buttons).toHaveLength(1);
+        expect(buttons[0].getAttribute('aria-label')).toBe('Remove Bob (@bob)');
+        buttons[0].click();
+        expect(await result).toBe(8);
+      });
+
+      it('closes the member list without selecting anyone', async () => {
+        const result = showMembersPopup(members, 4);
+        expect(document.querySelector('input[name="member"]')).toBeNull();
+        document.querySelector<HTMLButtonElement>('.popup-dialog__button--secondary')?.click();
+        expect(await result).toBeNull();
+      });
+
+      it('shows an empty circle when a member has no avatar', async () => {
+        const result = showMembersPopup([{ ...members[0], avatar: null }], 4);
+        expect(document.querySelector('.popup-dialog__member-avatar')?.tagName).toBe('SPAN');
+        document.querySelector<HTMLButtonElement>('.popup-dialog__button--secondary')?.click();
+        await result;
+      });
     });
 
     it('создаёт кнопки Cancel и Delete', () => {
