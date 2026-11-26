@@ -1,0 +1,18 @@
+<div class="dialog-header">
+    <button class="dialog-header__avatar" type="button" title="Change chat image" aria-label="Change chat image" disabled>
+        <img class="dialog-header__avatar-image" alt="" crossorigin="use-credentials" hidden>
+    </button>
+    <input class="dialog-header__avatar-input" type="file" accept="image/jpeg,image/png,image/gif,image/webp" aria-label="Choose chat image" hidden>
+    <div class="dialog-header__details">
+        <span class="dialog-header__name">{{userName}}</span>
+        <button class="dialog-header__users" type="button" disabled>Members</button>
+    </div>
+    <div class="dialog-header__actions">
+        <button class="dialog-header__add-user" type="button" disabled>Add user</button>
+        <button class="dialog-header__delete" type="button" title="Delete chat" aria-label="Delete chat" disabled>
+            <img src="{{deleteIcon}}" alt="">
+        </button>
+    </div>
+</div>
+
+
